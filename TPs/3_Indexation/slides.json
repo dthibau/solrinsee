@@ -1,0 +1,13 @@
+{
+    "auteur":"David Thibau",
+    "slides": [
+        {
+            "sujet":"jBPM Drools",
+            "nb_pages": 37
+        }, 
+        {
+            "sujet":"Jasper Reports",
+            "nb_pages": 27
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+Versions Elastic, Kibana : 7.4.2
+
+# Mise en place de l'index dans kibana
+DELETE /positions
+PUT /positions
+{ "mappings": { 
+    "properties": { 
+      "location": { "type": "geo_point" },
+      "@timestamp" : { "type": "date",
+      "format": ["YYYY-MM-DD'T'hh:mm:ss'Z'"]}
+     }
+}  }
+
+GET /positions/_mapping
+
+# Après démarrage du programme Java et de JMeter
+GET /positions/_search
+
+
+Dans kibana->Management, créer un index pattern
+positions*
+puis choisir le champ @timestamp
+
+Dans Discover, visualiser les documents qui s'indexent
+
+Dans Visualisation, créer une visualisation de type "Coordinate map", choisir le champ location pour l'agrégation

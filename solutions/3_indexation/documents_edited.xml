@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<update>
+<add overwrite="true">
+  <doc>
+    <field name="titre">Le livre blanc Kubernetes</field>
+    <field name="sujet">Smile et OpenSource</field>
+    <field name="mots-clefs">Black comedy</field>
+    <field name="filiere">Virtualisation, Containerisation, DevOps</field>
+    <field name="content_type">application/pdf</field>
+    <field name="nb_pages">45</field>
+    <field name="language">FR</field>
+  </doc>
+  <doc>
+    <field name="id">978-1-78829-303-7</field>
+    <field name="titre">Java EE8 CookBook</field>
+    <field name="auteur">Elder Moraes</field>
+    <field name="sujet">Build reliable applications with the most robust and mature technology for enterprise development</field>
+    <field name="date">2018-01-01</field>
+    <field name="nb_pages">344</field>
+    <field name="filiere">Développement</field>
+    <field name="language">EN</field>
+    <field name="content_type">application/pdf</field>
+  </doc>
+  <doc>
+    <field name="titre">Deviens un Ninja avec Angular</field>
+    <field name="filiere">UX Design</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">305</field>
+  </doc>
+  <doc>
+    <field name="titre">Become a Ninja with Angular</field>
+    <field name="filiere">UX Design</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">EN</field>
+    <field name="nb_pages">305</field>
+  </doc>
+  <doc>
+    <field name="titre">Kafka: The Definitive Guide</field>
+    <field name="auteur">Neha Narkhede</field>
+    <field name="auteur">Gwen Shapira</field>
+    <field name="auteur">Todd Palino</field>
+    <field name="date">2017-02-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">EN</field>
+    <field name="nb_pages">298</field>
+  </doc>
+  <doc>
+    <field name="id">5</field>
+    <field name="titre">Container Networking</field>
+    <field name="sujet">From Docker to Kubernetes</field>
+    <field name="auteur">Michael Hausenblas</field>
+    <field name="date">2018-04-17T00:00:00Z</field>
+    <field name="filiere">Virtualisation, Containerisation, DevOps</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">EN</field>
+    <field name="nb_pages">62</field>
+  </doc>
+  <doc>
+    <field name="id">6</field>
+    <field name="titre">Deap learning for search</field>
+    <field name="auteur">Tommaso Teofili</field>
+    <field name="date">2018-01-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">EN</field>
+    <field name="nb_pages">244</field>
+  </doc>
+  <doc>
+    <field name="id">7</field>
+    <field name="titre">DevOps et industrualisation</field>
+    <field name="sujet">Les solutions OpenSource</field>
+    <field name="date">2018-01-01T00:00:00Z</field>
+    <field name="filiere">Virtualisation, Containerisation, DevOps</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">64</field>
+  </doc>
+  <doc>
+    <field name="id">8</field>
+    <field name="titre">Le moteur de recherche SolR</field>
+   <field name="sujet">Ce cours Lucene Solr s'adresse aux développeurs ou chefs de projet impliqués dans un projet de développement de portail de recherche documentaire.</field>
+    <field name="date">2020-01-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/vnd.oasis.opendocument.presentation</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">278</field>
+  </doc>
+   <doc>
+    <field name="id">9</field>
+    <field name="titre">Ingénierie logicielle, principes de conception</field>
+    <field name="date">2019-01-01T00:00:00Z</field>
+    <field name="filiere">Développement</field>
+    <field name="content_type">application/vnd.oasis.opendocument.presentation</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">248</field>
+  </doc> 
+<doc>
+    <field name="id">10</field>
+    <field name="titre">Comprendre les outils devops</field>
+    <field name="sujet">Cette formation DevOps Agile : comprendre les outils utilisés par les acteurs d’un projet Agile peut être suivie par des développeurs, mais elle se destine en premier lieu aux profils opérationnels désireux de mieux comprendre la chaîne de production logicielle.</field>
+    <field name="date">2019-01-01T00:00:00Z</field>
+    <field name="filiere">Virtualisation, Containerisation, DevOps</field>
+    <field name="content_type">application/vnd.oasis.opendocument.presentation</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">218</field>
+  </doc> 
+  <doc>
+    <field name="id">11</field>
+    <field name="titre">Le moteur de recherche Elastic Search</field>
+   <field name="sujet">Cette formation s'adresse à toute personne souhaitant mettre en place une solution d'entreprise pour l'indexation et la recherche de contenu.</field>
+    <field name="date">2020-01-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">371</field>
+  </doc>
+  <doc>
+    <field name="id">12</field>
+    <field name="titre">Elastic Stack</field>
+   <field name="sujet">Ce cours s'adresse à toute personne amenée à utiliser ElasticSearch.</field>
+    <field name="date">2020-01-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">368</field>
+  </doc>
+  <doc>
+    <field name="id">13</field>
+    <field name="titre">Gitlab CI/CD</field>
+   <field name="sujet">La plateforme DevOps intégrée.</field>
+    <field name="date">2020-01-01T00:00:00Z</field>
+    <field name="filiere">Big Data</field>
+    <field name="content_type">application/pdf</field>
+    <field name="language">FR</field>
+    <field name="nb_pages">368</field>
+  </doc>
+</add>
+  <commit/>
+</update>

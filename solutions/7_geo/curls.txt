@@ -1,0 +1,17 @@
+# Rectangle arbitraire
+location:[45,2 TO 49.3]
+
+# Distance autour d'un point
+q=*:*&fl=*,geodist()&fq={!geofilt}&sfield=location&pt=48.52,2.29&d=1&sort=geodist()+asc&rows=100&start=200
+
+# Avec facettes
+facet=on=&
+facet.query={!frange l=0 u=0.5}geodist()&
+facet.query={!frange l=0.51 u=1}geodist()
+
+# RPT
+q=*:*&facet=on&facet.heatmap=location_rpt&facet.heatmap.geom=["45 0" TO "50 5"]&echoParams=explicit
+
+q=*:*&facet=on&facet.heatmap=location_rpt&facet.heatmap.geom=["0%200"%20TO%20"50%205"]&facet.mincount=1&rows=0&echoParams=explicit
+facet.heatmap.gridLevel : 3
+facet.heatmap.format : le format .

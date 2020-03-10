@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="default-config" version="1.6">
+  <uniqueKey>id</uniqueKey>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" />
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="location" class="solr.LatLonPointSpatialField" docValues="true"/>
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" distanceUnits="kilometers" />
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+
+  <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
+
+  <field name="coursier_id" type="plong"/>
+  <field name="location" type="location"/>
+  <field name="location_rpt" type="location_rpt"/>
+  <field name="timestamp" type="pdate"/>
+
+  <!-- copyField source="location" dest="location_rpt"/ -->
+ 
+</schema>

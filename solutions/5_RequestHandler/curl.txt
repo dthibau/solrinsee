@@ -1,0 +1,24 @@
+
+# Test de la configuration
+curl 'http://localhost:8983/solr/bureautique/api?q=*:*'
+
+# Exemples de requêtes
+#######################
+# Documents répondant à « Java »
+curl 'http://localhost:8983/solr/bureautique/api?q=java&debug=false'
+# Documents répondant à « Java »
+curl 'http://localhost:8983/solr/bureautique/api?q=-java&debug=false'
+# 1 seul document retourné
+curl 'http://localhost:8983/solr/bureautique/api?q=java&debug=false&rows=1'
+# Documents dont le contenu contient « Groovy »
+curl 'http://localhost:8983/solr/bureautique/api?q=content:groovy&debug=false'
+# Documents dont le contenu contient « Groovy »
+curl 'http://localhost:8983/solr/bureautique/api?q=content:groovy&debug=false&fq=content_type:application/pdf'
+# Documents dont la date supérieure
+curl 'http://localhost:8983/solr/bureautique/api?q=*:*&fl=creation_date&debug=false&fq=creation_date:\[2016-01-01T00:00:00Z+TO+*\]'
+# Documents dont la date supérieure
+curl 'http://localhost:8983/solr/bureautique/api?fq=creation_date%3A%5B2012-01-01T00%3A00%3A00Z%20TO%20*%5D&q=%2Bcontent%3A(java%20elastic%20search)%20-content%3AAdministration'
+# Proximité phrase
+http://localhost:8983/solr/bureautique/select?df=_all_&hl.fl=_all_&hl=on&q=%22administration%20java%22~20
+# Fuzzy
+http://localhost:8983/solr/bureautique/api?q=administracion~2
