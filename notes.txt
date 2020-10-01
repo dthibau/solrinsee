@@ -1,0 +1,9 @@
+### WARNINGS : LUCENE 
+
+vi /etc/sysctl.conf
+
+sudo sysctl -w vm.max_map_count=262144
+
+# limitation fichiers ouverts
+/etc/security/limits.conf 
+vi @stage hard nofile 65536 
