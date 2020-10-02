@@ -1,7 +1,7 @@
-
+bin/solr create -c bureautique
 
 curl 'http://localhost:8983/solr/admin/cores?action=RELOAD&core=bureautique'
 
-bin/post -c bureautique -params "extractOnly=true&indent=true" -out yes ../../TPs/4_Bureautique/Gradle.pdf
+bin/post -c bureautique -params "extractOnly=true&indent=true" -out yes ../../repo/TPs/4_Bureautique/Gradle.pdf
 
-bin/post -c bureautique -params "extractOnly=true&indent=true" -out yes ../../TPs/4_Bureautique/*.*
+bin/post -c bureautique -out yes ../../repo/TPs/4_Bureautique/*.*
