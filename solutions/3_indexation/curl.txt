@@ -4,7 +4,7 @@ curl http://localhost:8983/solr/formation_managed/update -H "Content-Type: text/
 
 curl 'http://localhost:8983/solr/admin/cores?action=RELOAD&core=formation'
 
-curl 'http://localhost:8983/solr/formation/update -H "Content-Type: text/xml" --data-binary @documents_edited.xml
+curl http://localhost:8983/solr/formation/update -H "Content-Type: text/xml" --data-binary @documents_edited.xml
 
 
 curl 'http://localhost:8983/solr/formation/update/json/docs?split=/slides&f=auteur:/auteur&f=sujet:/slides/sujet&f=nb_pages:/slides/nb_pages' -H 'Content-type:application/json' --data-binary @slides.json
