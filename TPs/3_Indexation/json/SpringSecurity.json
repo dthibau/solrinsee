@@ -1,0 +1,1697 @@
+{
+    "id": 111,
+    "titre": "Spring Security",
+    "sujet" : "",
+    "auteur": [
+        "D. Thibau"
+    ],
+    "date": "2012-02-01T00:00:00Z",
+    "mots-clefs" : [
+        "Java",
+        "Sécurité"
+    ], 
+    "content_type": "application/pdf",
+    "nb_pages": 127,
+    "language": "fr",
+    "content" : "Spring SecuritySommaire
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 2Plan
+    • Introduction
+    • Généralités
+    • Sécuriser une application Spring
+    • Authentification
+    • Implémenter un AuthenticationProvider
+    • Login, logout, 403
+    • SecurityContext
+    • Le mécanisme de WebFilter
+    • FilterChainProxy
+    • Fonctionnalités
+    d'autorisations
+    • Requêtes
+    • Objets et méthodes
+    • Authentification par rôle, par type
+    d'authentification
+    • Hiérarchie des rôles
+    • Intégration dans une
+    application JEE
+    • Les principaux filtres• API Servlet
+    • Authentification Basic et Digest• Localisation des messages
+    • Remember-me• Taglib Security
+    • Authentification anonyme
+    • Sessions (gestion des)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 3Plan
+    • Tests
+    • Spring security test
+    • Test MVC
+    • Configuration avancée des
+    requêtes HTTP
+    • CSRF
+    • XSS
+    • Iframe
+    • Cache
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 4Introduction
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 5Les besoins
+    • Gérer des utilisateurs
+    • Utilisateurs, mots de passe, droits, informations sur l'utilisateur, …
+    • Sécuriser des URL
+    • Empêcher l'accès à certaines URL en fonction du type d'utilisateur
+    • Sécuriser des services
+    •
+    Empêcher l'accès à certains services, d'activer certaines opérations, …
+    • Sécuriser des objets du domaine
+    • Sécuriser certaines instances d'objet métier
+    − Empêcher d’accéder aux données d'un autre utilisateur
+    − Alors qu'on accède aux siennes
+    • Sécuriser l'exécution du code
+    • Historiquement, la sécurisation de l'exécution des applets
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 6Les apis Java
+    • JAAS
+    • Dédiée à la gestion fine des droits d'exécutions du code
+    • Vise surtout la sécurisation des applets et applications Swing
+    • Spécification Java EE
+    • Essentiellement basée sur la sécurisation des URLs des applis Web
+    • Peu portable : la spécification s'arrête très tôt, chaque serveur a ses spécificités
+    • Intérêts de Spring Security
+    • Fournit une solution complète de sécurité
+    • Gestion de l'authentification
+    • Gestion des autorisations
+    − Au niveau des requêtes web
+    − Au niveau des invocations de méthodes
+    • Portable (indépendante du serveur d'application)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 7Vocabulaire
+    • Authentification
+    • Vérifier qu'un utilisateur est bien celui qu'il prétend être
+    • Généralement basé sur la notion d'identifiant et de mot de passe
+    • Autorisation
+    • Vérifier que l'utilisateur authentifié a bien le droit d'exécuter une action
+    • Un utilisateur a généralement plusieurs autorisations gérées par groupes
+    • Subject et Principal : deux objets issus des spécifications Java
+    • Subject : l'utilisateur vu par l'application
+    • Principal : une représentation de cet utilisateur
+    − login, adresse mail, matricule, … (un Subject peut disposer de plusieurs Principal)
+    • Ressource et permissions
+    • Ressource : une entité (URL, objet, …) protégée
+    • Permission : le droit d'accéder à cette ressource
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 8Généralités
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 9XML Vs Java Configuration
+    • Depuis Spring 3 on peut déclarer sa configuration
+    • En XML (méthode historique)
+    • En Java
+    • Les deux méthodes sont utilisables en parallèle
+    • Avantages d'une configuration en XML
+    • Compatible Legacy
+    • La configuration et le code ne sont pas mélangés
+    • Plus puissant
+    • Avantage des configurations en annotations
+    • La configuration est compilée (moins d'erreur)
+    • Plus simple, mécanisme d’auto-configuration
+    • Plus en avant dans la communauté Spring
+    • On peut faire une application Spring sans aucun fichier XML (Spring boot)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 10Exemple
+    • Configuration XML
+    <?xml version='1.0' encoding='UTF-8'?>
+    <beans:beans xmlns='http://www.springframework.org/schema/mvc'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:beans='http://www.springframework.org/schema/beans'
+    xmlns:context='http://www.springframework.org/schema/context'
+    xsi:schemaLocation='http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd'>
+    •
+    •
+    •
+    •
+    <beans:bean id='messageSource'
+    class='org.springframework.context.support.ResourceBundleMessageSource'>
+    <beans:property name='basename' value='libelles' />
+    </beans:bean>c
+    • Configuration Java (java config)
+    @org.springframework.context.annotation.Configuration
+    public class Configuration {
+    @Bean(name = 'dataSource')
+    public DataSource dataSource() {
+    DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+    driverManagerDataSource.setDriverClassName('com.mysql.jdbc.Driver');
+    driverManagerDataSource.setUrl('jdbc:mysql://localhost:3306/spring_security');
+    driverManagerDataSource.setUsername('root');
+    driverManagerDataSource.setPassword('admin');
+    return driverManagerDataSource;
+    }
+    @Bean
+    public SessionRegistry sessionRegistry() {
+    return new SessionRegistryImpl();
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 11Sécuriser une application Spring
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 12Authentification
+    • La première chose à mettre en place
+    • Identifier l’utilisateur et garantir qu’il est bien celui qu’il prétend
+    • Se fait à l'aide de deux éléments
+    • « principal » (généralement un username)
+    • « credentials » (généralement un mot de passe)
+    • Interface AuthenticationManager
+    • Définit la méthode authenticate
+    − Prend un Authentication en paramètre
+    − Retourne un Authentication renseigné en sortir
+    − Ou bien lève une exception AuthenticationException
+    public interface AuthenticationManager {
+    }
+    public Authentication authenticate(Authentication a) throws AuthenticationException;
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 13Authentication
+    • L'objet qui représente le principal qui utilise l'application
+    • Il donnera accès aux informations nécessaires
+    • Il est accessible via le SessionContext (voir ci-après)
+    public interface Authentication extends Principal, Serializable {
+    Collection<? extends GrantedAuthority> getAuthorities();
+    Object getCredentials();
+    Object getDetails();
+    Object getPrincipal();
+    boolean isAuthenticated();
+    }
+    void setAuthenticated(boolean isAuthenticated)
+    throws IllegalArgumentException;
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 14GrantedAuthority
+    • Une « autorité » donné à un Principal
+    • Typiquement un rôle tel que ROLE_ADMINISTRATOR
+    • L'Authentication donne la liste des GrantedAuthority
+    − Chargée par le UserDetailsService
+    • Constitue la base des autorisations transverses du système
+    • L'implémentation la plus utilisée est SimpleGrantedAuthority
+    • Qui est juste une chaîne de caractères
+    • Donc une liste de GrantedAuthorities est une liste de String
+    TP 1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 15ProviderManager
+    • L'implémentation par défaut de AuthenticationManager
+    • Permet de déléguer l'authentification auprès de plusieurs sources
+    − Interface AuthenticationProvider
+    • Testé l'un après l'autre jusqu'à ce qu'un retourne un Authentication complet
+    − Si aucun une exception ProviderNotFoundException est levée
+    • Permet de gérer plusieurs mécanismes d'identification pour une application
+    <bean id='authenticationManager'
+    class='org.springframework.security.authentication.ProviderManager'>
+    <constructor-arg>
+    <list>
+    <ref local='daoAuthenticationProvider'/>
+    <ref local='anonymousAuthenticationProvider'/>
+    <ref local='ldapAuthenticationProvider'/>
+    </list>
+    </constructor-arg>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 16AuthenticationProvider
+    • Des AuthenticationProvider pour toute situation :
+    • AuthByAdapterProvider : authentification depuis le conteneur
+    • AnonymousAuthenticationProvider : identifie un anonymous
+    • DaoAuthenticationProvider : info dans une base de données
+    • CasAuthenticationProvider : authentification CAS
+    • JaasAuthenticationProvider : authentification JAAS
+    • LdapAuthenticationProvider : authentification LDAP
+    • RememberMeAuthenticationProvider : authentification auto
+    • RemoteAuthenticationProvider : auth. avec un service distant
+    • X509AuthenticationProvider : auth. avec un certificat X.509
+    • …
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 17AuthenticationProvider
+    • C'est le principe de Spring Security
+    • Pouvoir se connecter sur tout un panel d'IDP (identity Provider)
+    • Ainsi que pouvoir faire une authentification en local
+    • Ou implémenter son propre AuthentificationProvider
+    • Note : tous les providers ne sont pas inclus dans le package
+    Security.jar
+    • Mais dans des librairies spécifiques
+    • Bien sur il n'est pas obligatoire de passer par un
+    AuthenticationProvider
+    • Mais il faut réécrire un authentification manager
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 18DaoAuthenticationProvider
+    • L'implément JDBC de l'authentification
+    • AuthentificationManager (ProviderManager) appelle authenticate()
+    − Sur le DaoAuthenticationManager
+    • Celui-ci accède au UserDetailsService
+    − Pour aller chercher les informations (user, password) dans la base de données
+    • Il compare au principal et credentials proposés
+    • Si ça correspond, retourne un Authentication entièrement renseigné
+    • Sinon, lève une AuthenticationException
+    • Remarque : le passwordEncoder est obligatoire (encodage du mot de passe)
+    <bean id='authenticationProvider'
+    class='org.springframework.security.authentication.dao.DaoAuthenticationProvider'>
+    <property name='userDetailsService' ref='userDetailsService'/>
+    <property name='passwordEncoder' ref='passwordEncoder'/>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 19UserDetailsService
+    • L'interface du service d'accès aux informations de l'utilisateur
+    • Spring n'impose pas un objet particulier (interface UserDetails)
+    − Cela permet de stocker son propre objet avec tous les détails souhaités
+    − Exemple : adresse mail, numéro de téléphone, matricule, …
+    • Spring fournit des implémentations du UserDetailsService
+    • JdbcDaoImpl et InMemoryDaoImpl
+    public interface UserDetailsService {
+    UserDetails loadUserByUsername(String username)
+    throws UsernameNotFoundException;
+    }
+    public interface UserDetails extends Serializable {
+    Collection<? extends GrantedAuthority> getAuthorities();
+    String getPassword();
+    String getUsername();
+    boolean isAccountNonExpired();
+    boolean isAccountNonLocked();
+    boolean isCredentialsNonExpired();
+    boolean isEnabled();
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 20Gestion en mémoire
+    • Pour les applications simples ou les prototypes
+    • Garde une map des utilisateurs et leurs droits
+    • Facile à construire avec le namespace security
+    • Soit directement, soit en chargeant un fichier properties
+    − username=password,grantedAuthority[,grantedAuthority][,enabled|disabled]
+    <user-service id='userDetailsService'>
+    <user name='jimi' password='jimispassword' authorities='ROLE_USER, ROLE_ADMIN' />
+    <user name='bob' password='bobspassword' authorities='ROLE_USER' />
+    </user-service>
+    <user-service id='userDetailsService' properties='users.properties'/>
+    jimi=jimispassword,ROLE_USER,ROLE_ADMIN,enabled
+    bob=bobspassword,ROLE_USER,enabled
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 21JdbcDaoImpl
+    • Récupère les informations depuis une base de données
+    <bean id='dataSource'
+    class='org.springframework.jdbc.datasource.DriverManagerDataSource'>
+    <property name='driverClassName' value='org.hsqldb.jdbcDriver'/>
+    <property name='url' value='jdbc:hsqldb:hsql://localhost:9001'/>
+    <property name='username' value='sa'/>
+    <property name='password' value=''/>
+    </bean>
+    <bean id='userDetailsService'
+    class='org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl'>
+    <property name='dataSource' ref='dataSource'/>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 22JdbcDaoImpl
+    • Deux requêtes par défaut (impose la structure)
+    SELECT username, password, enabled FROM users WHERE username = ?
+    SELECT username, authority FROM authorities WHERE username = ?
+    • Possibilité de spécifier ses propres requêtes
+    <bean id='authenticationDao'
+    class='org.springframework.security.userdetails.jdbc.JdbcDaoImpl'>
+    <property name='dataSource' ref bean='dataSource' />
+    <property name='usersByUsernameQuery'>
+    <value>requête spécifique</value>
+    </property>
+    <property name='authoritiesByUsernameQuery'>
+    <value>requête spécifique</value>
+    </property>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 23Encryptage du mot de passe
+    • Pour plus de sécurité, ne jamais garder un mot de passe en clair
+    • L'encrypter avec un PasswordEncoder
+    − En réalité on ne l'encrypte pas, on le « hash » (décryptage impossible)
+    • On l'injecte dans le DaoAuthenticationProvider
+    • Implémentations proposées
+    • BcryptPasswordEncoder (recommandé)
+    • NoOpPasswordEncoder (n'encode pas, pour les tests ou cas spéciaux)
+    • StandardPasswordEncoder : combine plusieurs choses
+    • Anciennes implémentations proposées (compatibilités)
+    • PlaintextPasswordEncoder : pas d’encryptage
+    • Md5PasswordEncoder : encryptage MD5
+    • ShaPasswordEncoder : encryptage SHA
+    • LdapShaPasswordEncoder : encryptage LDAP
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 24Encryptage avec clé
+    • Problème avec des mots de passes faibles
+    • On peut hasher une liste de mots (dictionnaire)
+    • Et retrouver le mot de passe d'origine en comparant avec chaque valeur
+    • On peut compliquer la tâche en ajoutant un « grain de sel »
+    • 'saltSource' ajoute une clé avant de hasher le mot de passe
+    • Deux possibilités
+    − SystemWideSaltSource : une clé commune
+    − ReflectionSaltSource : une clé issue de la valeur d'une propriété de l'objet User
+    • À injecter aussi dans le DaoAuthenticationProvider
+    • Bcrypt fabrique une clé automatiquement à chaque mot de passe
+    • Recommandation Spring : utiliser Bcrypt
+    • Attention : il faut 1 seconde pour crypter un mot de passe
+    (bcrypt)
+    • A refaire à chaque demande de credentials
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 25Gestion d’un cache
+    • Interface UserCache
+    • Pour éviter de trop solliciter la base pour les mêmes informations
+    • On configure le DaoAuthenticationProvider
+    • En injectant dans sa propriété userCache
+    • Typique des applications stateless
+    • Implémentations proposées :
+    • NullUserCache : pas de cache (implémentation par défaut)
+    • EhCacheBasedUserCache : basé sur EHCache
+    • SpringCacheBasedUserCache : basé sur un Cache de Spring
+    • Problèmes potentiels
+    • Exemple : le mot de passe soumis est purgé après une authentification réussie,
+    l’application étant stateless, on doit s’authentifier à chaque requête
+    − Nécessite de faire une copie pour alimenter le cache avant que l'information soit purgée ou de
+    configurer Spring pour éviter la purge
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 26LDAP
+    • Utilisation d'un LDAP pour l'authentification
+    • En utilisant l'extension Spring-security-ldap
+    @Autowired
+    •
+    public void configureGlobal(
+    AuthenticationManagerBuilder auth) throws Exception {
+    auth
+    .ldapAuthentication()
+    .userDnPatterns('uid={0},ou=people')
+    .groupSearchBase('ou=groups');
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 27Implémenter son propre Authentification
+    Provider ?
+    • Pourquoi ?
+    • Connexion à un Identity Provider d'entreprise par exemple
+    • Probablement très complexe
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 28Implémenter son UserDetailService
+    • A quoi ça sert ?
+    • A modifier le DaoAuthenticationProvider
+    • Pourquoi ?
+    • Ne plus se baser sur le schéma Spring
+    • S'interfacer directement avec son SI
+    • Rajouter des fonctionnalités (Groupes de droits par exemple)
+    • Comment ?
+    • Réécrire un nouveau service implémentant
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+    •
+    • Et utiliser sa propre table user et rights
+    − Avec ses paramètres spécifiques (email, tel etc...)
+    − Avoir un système de droit plus complexe (groupe de droits)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 29SecurityContextHolder
+    • Stocke les informations de sécurité
+    • Dont le principal
+    • Par défaut stocke ses informations dans une variable
+    THREAD_LOCAL
+    • Initialisé à la réception de la requête
+    • Détruit après l'envoi de la réponse
+    • Et donc accessible par toutes les classes traversés lors du traitement de la
+    requête WEB
+    • On peut modifier la durée de stockage des informations
+    • SecurityContextHolder.MODE_GLOBAL (application lourde)
+    • SecurityContextHolder.MODE_INHERITABLETHREADLOCAL (application
+    créant des threads)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 30Authentication/Principal
+    • Récupération de authentification :
+    •
+    Authentication auth =
+    SecurityContextHolder.getContext().getAuthentication();
+    • Récupération du principal :
+    •
+    Object principal = auth.getPrincipal();
+    if (principal instanceof UserDetails) {
+    System.out.println('UserName ' + ((UserDetails)
+    principal).getUsername());
+    System.out.println('Password ' + ((UserDetails)
+    principal).getPassword());
+    System.out.println('Name ' + ((UserDetails) principal).getName());
+    } else {
+    String username = principal.toString();
+    }
+    •
+    •
+    •
+    •
+    •
+    • On accède aussi aux Authorities de l'utilisateur
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 31Implémentation sur une application Web
+    • Comment j'installe Spring Security moi ?
+    • Deux dépendances minimales
+    • org.springframework.security.spring-security-web
+    • org.springframework.security.spring-security-config
+    • Modules complémentaires selon les choix d'implémentations
+    • spring-security-ldap, spring-security-cas, spring-security-openid, …
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 32Mise en place (XML)
+    • Configuration du filtre de sécurité (dans le web.xml)
+    • Prend en charge toutes les URLs (« /* »)
+    <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 33Mise en place (Java Config)
+    • En ayant activé la configuration par annotation
+    •@EnableWebSecurity(debug = true)
+    @Configuration
+    •public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    }
+    •
+    • Dans les deux cas, on initialise une
+    springSecurityFilterChain
+    • On profite de l’auto-configuration
+    • Toutes les URLs sont protégées
+    • L’authentification par formulaire est activée, un formulaire par défaut est généré
+    • L’utilisateur peut se délogger
+    • Des filtres protègent contre les attaques classiques
+    • Les entêtes HTTP de sécurité sont intégrées
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 34Mise en place (Java Config)
+    • Il faut maintenant définir un bean userDetailService
+    •
+    @Bean
+    public UserDetailsService userDetailsService() {
+    UserDetails user =
+    User.withDefaultPasswordEncoder().username('user').password('password').roles(
+    'USER')
+    .build();
+    UserDetails user2 =
+    User.withDefaultPasswordEncoder().username('admin').password('password')
+    .roles('USER', 'ADMIN').build();
+    return new InMemoryUserDetailsManager(user, user2);
+    }
+    •
+    •
+    •
+    •
+    • Et définir les ressources sécurisées
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests().anyRequest().authenticated();
+    }
+    TP 2.1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 35Security : Par défaut
+    • Par défaut HTTP génère
+    • Une protection des pages web
+    • Protection CSRF
+    • Des headers
+    − HTTP Strict Transport Security for secure requests
+    − X-Content-Type-Options integration
+    − Cache Control (can be overridden later by your application to allow caching of your static
+    resources)
+    − X-XSS-Protection integration
+    − X-Frame-Options integration to help prevent Clickjacking
+    • Des Servlets
+    − HttpServletRequest#getRemoteUser()
+    − HttpServletRequest.html#getUserPrincipal()
+    − HttpServletRequest.html#isUserInRole(java.lang.String)
+    − HttpServletRequest.html#login(java.lang.String, java.lang.String)
+    − HttpServletRequest.html#logout()
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 36Login
+    • HTTP.formLogin()
+    • Construit une page de login par défaut
+    • Customisable...
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+    http.formLogin()
+    .loginPage('/login.html')
+    .loginProcessingUrl('/perform_login')
+    .defaultSuccessUrl('/homepage.html',true)
+    .failureUrl('/login.html?error=true')
+    }
+    • Retourne à la page demandée en cas de succès
+    • Penser à rendre cette page accessible à tout le monde
+    • formLogin().permitAll()
+    • On peut passer par son propre login.jsp
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 37Login
+    • Paramètres :
+    • Always-use-default-target
+    • Authentication-details-source-ref
+    • Authentication-failure-handler-ref
+    • Authentication-failure-url
+    • Authentication-success-handler-ref
+    • Default-target-url
+    • Login-page
+    • Login-processing-url
+    • Password-parameter/username-parameter
+    • Authentication-success-forward-url
+    • Authentication-failure-forward-url
+    TP 2.2
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 38Logout
+    • HTTP.logout()
+    • Construit une servlet de logout (/logout)
+    • Customisable
+    <logout
+    logout-success-url='/anonymous.html'
+    logout-url='/perform_logout'
+    delete-cookies='JSESSIONID' />
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 39Logout
+    • Paramètres :
+    • delete-cookies
+    • Invalidate-session
+    • Logout-success-url
+    • Logout-url
+    • Success-handler-ref
+    TP 2.3
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 40Page 403
+    • Possibilité d'ajouter une page d'erreur de droits
+    •<access-denied-handler error-page='/errors/403' />
+    •http.exceptionHandling().accessDeniedPage('/forbidden.jsp');
+    • Cela permet d'avoir une page plus jolie que le 403 par défaut du
+    serveur d'application
+    TP 2.4
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 41SecurityContextHolder
+    • L'objet fondamental dans la gestion de la sécurité
+    • Il détient un SecurityContext qui détient les informations de sécurité
+    • Basé par défaut sur un ThreadLocal
+    − Mécanisme permettant de stocker des informations liées au thread courant
+    • Désactivable si l'application utilise de manière spéciale les thread
+    • Exemple pour accéder au username
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof UserDetails) {
+    String username = ((UserDetails)principal).getUsername();
+    } else {
+    String username = principal.toString();
+    }
+    TP 2.5 et 2.6
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 42Autres providers
+    • Spring Security est fait pour s'interface avec des plateformes
+    externe (IDP) de gestion d'identité.
+    • spring-security-cas.jar
+    • spring-security-openid.jar
+    • spring-security-oauth2-client.jar
+    • spring-security-ldap.jar
+    • Etc.
+    • Pour s'interfacer avec ces plate-formes, suivre la documentation.
+    • La documentation de Spring security contient un repository git contenant des
+    exemples (en gradle)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 43Le mécanisme de web filters
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 44Sécurité des applications web
+    • La chaîne de sécurité est basée sur les filtres de servlets
+    • Technologie complètement standard
+    • Spring conserve une chaîne de filtres internes ou chacun à sa responsabilité
+    • Les filtres sont ajoutés/supprimés par configuration en fonction des besoins
+    • Mais il est extrêmement important de respecter l'ordre logique d'enchaînement
+    • L'injection n'est pas possible dans le filtre
+    • Le DelegatingFilterProxy délègue à un bean (portant le même nom)
+    − Recherché dans le contexte Spring
+    • La namespace security simplifie la construction de cette chaîne
+    • En évitant la construction de nombreux beans
+    • En évitant de ne pas respecter l'ordre imposé
+    • Déclare par défaut le bean 'springSecurityFilterChain'
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 45La classe FilterChainProxy
+    • Deux dépendances minimales
+    • org.springframework.security.spring-security-web
+    • org.springframework.security.spring-security-config
+    • Modules complémentaires selon les choix d'implémentations
+    • spring-security-ldap, spring-security-cas, spring-security-openid, …
+    • Configuration du filtre de sécurité (dans le web.xml)
+    • Prend en charge toutes les URLs (« /* »)
+    <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 46Principaux filtres
+    • Cet ordre illustre les fonctionnalités supportées
+    − ChannelProcessingFilter : rediriger sur un autre protocole (https)
+    − SecurityContextPersistenceFilter : gérer le SecurityContext, stocké dans la
+    session par défaut
+    − ConcurrentSessionFilter : gère les sessions multiples, peut invalider la session
+    − Le mécanisme d'authentification : UsernamePasswordAuthenticationFilter , ...
+    − SecurityContextHolderAwareRequestFilter : injection explicite du SecurityContext
+    − JaasApiIntegrationFilter : un jeton JaasAuthenticationToken comme Subject
+    − RememberMeAuthenticationFilter : gérer une reconnexion avec un cookie
+    − AnonymousAuthenticationFilter : garantir qu'un Authentication existe (anonyme)
+    − ExceptionTranslationFilter : gère les exceptions de sécurité lors de l'authentification
+    − FilterSecurityInterceptor : lève les exceptions si l'accès est interdit
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 47Initialisation des filtres web
+    • Une partie des filtres sont initialisés par défaut
+    • On peut désactiver cette configuration par défaut
+    • Et la refaire
+    • Mais Spring le déconseille
+    • Les modifications de la configuration Security vont modifier ces
+    filtres
+    • Soit rajouter des paramètres (exemple avec le 403)
+    • Soit rajouter des filtres nouveaux (authentification par mot de passe)
+    • On peut rajouter manuellement des filtres
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 48FilteringSecurityInterceptor
+    • FilteringSecurityInterceptor : S'occupe de vérifier les droits
+    d’accès aux URL (autorisations)
+    <bean id='filterInvocationInterceptor'
+    class='org.springframework.security.web.access.intercept.FilterSecurityInterceptor'>
+    <property name='authenticationManager' ref='authenticationManager'/>
+    <property name='accessDecisionManager' ref='accessDecisionManager'/>
+    <property name='runAsManager' ref='runAsManager'/>
+    <property name='securityMetadataSource'>
+    <security:filter-security-metadata-source request-matcher='regex'>
+    <security:intercept-url pattern='\A/secure/super/.*\Z'
+    access='ROLE_WE_DONT_HAVE'/>
+    <security:intercept-url pattern='\A/secure/.*\'
+    access='ROLE_SUPERVISOR,ROLE_TELLER'/>
+    </security:filter-security-metadata-source>
+    </property>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 49ExceptionTranslationFilter
+    • ExceptionTranslationFilter : Gestion des pages 403
+    <bean id='exceptionTranslationFilter'
+    class='org.springframework.security.web.access.ExceptionTranslationFilter'>
+    <property name='authenticationEntryPoint' ref='authenticationEntryPoint'/>
+    <property name='accessDeniedHandler' ref='accessDeniedHandler'/>
+    </bean>
+    <bean id='authenticationEntryPoint'
+    class='org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoi
+    nt'>
+    <property name='loginFormUrl' value='/login.jsp'/>
+    </bean>
+    <bean id='accessDeniedHandler'
+    class='org.springframework.security.web.access.AccessDeniedHandlerImpl'>
+    <property name='errorPage' value='/accessDenied.htm'/>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 50UsernamePasswordAuthentificationFilter
+    • Appelle l'authentificationManager !
+    <bean id='authenticationFilter' class=
+    'org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilt
+    er'>
+    <property name='authenticationManager' ref='authenticationManager'/>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 51Debug
+    • Debug de spring security
+    •
+    @EnableWebSecurity(debug = true)
+    •
+    • Activation des logs depuis logback.xml
+    • Très verbeux mais utile
+    •
+    <logger name='org.springframework.security' level=' debug ' />
+    •
+    • Permet de suivre le passage des différents filtres
+    • A ne pas activer en production
+    • De base Spring masque les passwords, mais quand même faire attention.
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 52Debug (2)
+    /secure/ServletTest at position 1 of 12 in additional filter chain; firing Filter:
+    'WebAsyncManagerIntegrationFilter'
+    /secure/ServletTest at position 2 of 12 in additional filter chain; firing Filter:
+    'SecurityContextPersistenceFilter'
+    = true)
+    Obtained @EnableWebSecurity(debug
+    a valid SecurityContext from
+    SPRING_SECURITY_CONTEXT:
+    'org.springframework.security.core.context.SecurityContextImpl@442be9fb: Authentication:
+    org.springframework.security.authentication.UsernamePasswordAuthenticationToken@442be9fb:
+    Principal: org.springframework.security.core.userdetails.User@36ebcb: Username: user;
+    Password: [PROTECTED]; Enabled: true; AccountNonExpired: true; credentialsNonExpired: true;
+    AccountNonLocked: true; Granted Authorities: ROLE_USER; Credentials: [PROTECTED];
+    Authenticated: true; Details:
+    org.springframework.security.web.authentication.WebAuthenticationDetails@0: RemoteIpAddress:
+    0:0:0:0:0:0:0:1; SessionId: D3D679FD8EC85F06E133B9B7D6A6C231; Granted Authorities:
+    ROLE_USER'
+    /secure/ServletTest at position 3 of 12 in additional filter chain; firing Filter:
+    'HeaderWriterFilter'
+    Not injecting HSTS header since it did not match the requestMatcher
+    org.springframework.security.web.header.writers.HstsHeaderWriter$SecureRequestMatcher@467297
+    51
+    /secure/ServletTest at position 4 of 12 in additional filter chain; firing Filter:
+    'CsrfFilter'
+    /secure/ServletTest at position 5 of 12 in additional filter chain; firing Filter:
+    'LogoutFilter'
+    Request 'GET /secure/ServletTest' doesn't match 'POST /logout
+    /secure/ServletTest at position 6 of 12 in additional filter chain; firing Filter:
+    'UsernamePasswordAuthenticationFilter'
+    Request 'GET /secure/ServletTest' doesn't match 'POST /login
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 53Debug (3)
+    /secure/ServletTest at position 7 of 12 in additional filter chain; firing Filter:
+    'RequestCacheAwareFilter'
+    /secure/ServletTest at position 8 of 12 in additional filter chain; firing Filter:
+    'SecurityContextHolderAwareRequestFilter'
+    @EnableWebSecurity(debug
+    true)
+    /secure/ServletTest
+    at position 9= of
+    12 in additional filter chain; firing Filter:
+    'AnonymousAuthenticationFilter'
+    SecurityContextHolder not populated with anonymous token, as it already contained:
+    'org.springframework.security.authentication.UsernamePasswordAuthenticationToken@442be
+    9fb: Principal: org.springframework.security.core.userdetails.User@36ebcb: Username:
+    user; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true;
+    credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities: ROLE_USER;
+    Credentials: [PROTECTED]; Authenticated: true; Details:
+    org.springframework.security.web.authentication.WebAuthenticationDetails@0:
+    RemoteIpAddress: 0:0:0:0:0:0:0:1; SessionId: D3D679FD8EC85F06E133B9B7D6A6C231; Granted
+    Authorities: ROLE_USER'
+    /secure/ServletTest at position 10 of 12 in additional filter chain; firing Filter:
+    'SessionManagementFilter'
+    /secure/ServletTest at position 11 of 12 in additional filter chain; firing Filter:
+    'ExceptionTranslationFilter'
+    /secure/ServletTest at position 12 of 12 in additional filter chain; firing Filter:
+    'FilterSecurityInterceptor'
+    Checking match of request : '/secure/ServletTest'; against '/login.jsp'
+    Checking match of request : '/secure/ServletTest'; against '/forbidden.jsp'
+    Checking match of request : '/secure/ServletTest'; against '/secure/user.jsp'
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 54Debug (4)
+    Checking match of request : '/secure/ServletTest'; against '/secure/admin.jsp'
+    Secure object: FilterInvocation: URL: /secure/ServletTest; Attributes: [authenticated]
+    Previously Authenticated:
+    org.springframework.security.authentication.UsernamePasswordAuthenticationToken@442be9
+    @EnableWebSecurity(debug = true)
+    fb: Principal:
+    Username: user; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true;
+    credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities: ROLE_USER;
+    Credentials: [PROTECTED]; Authenticated: true; Details:
+    org.springframework.security.web.authentication.WebAuthenticationDetails@0:
+    RemoteIpAddress: 0:0:0:0:0:0:0:1; SessionId: D3D679FD8EC85F06E133B9B7D6A6C231; Granted
+    Authorities: ROLE_USER
+    returned: 1
+    Authorization successful
+    RunAsManager did not change Authentication object
+    Chain processed normally
+    SecurityContextHolder now cleared, as request processing completed
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 55Authentification Basic
+    • Correspondant à une authentification HTTP « Basic »
+    • Attention : Pas de cryptage de password en base
+    • Encodage en base 64 du login/password
+    • Les navigateurs gèrent ça comme des fenêtres OS natives
+    • Configuration :
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+    http.httpBasic();
+    }
+    TP 3.1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 56Authentification Digest
+    • Amélioration du http basic
+    • Avec cryptage du mot de passe dans le réseau
+    • Mise en place pour éviter les mots de passes en clairs
+    • Mais n'est plus considéré comme sécure
+    • Nécessité de ne pas crypter son mot de passe en base
+    • Le serveur envoie un 'nonce' de la forme
+    base64(expirationTime + ':' + md5Hex(expirationTime + ':' + key))
+    expirationTime:
+    The date and time when the nonce expires, expressed in
+    milliseconds
+    key:
+    A private key to prevent modification of the nonce token
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 57Authentification Digest (2)
+    •
+    <bean
+    id='digestFilter' class=
+    •
+    'org.springframework.security.web.authentication.www.DigestAuthentication
+    Filter'>
+    •
+    <property name='userDetailsService' ref='jdbcDaoImpl'/>
+    <property name='authenticationEntryPoint' ref='digestEntryPoint'/>
+    <property name='userCache' ref='userCache'/>
+    </bean>
+    <bean id='digestEntryPoint' class=
+    'org.springframework.security.web.authentication.www.DigestAuthentication
+    EntryPoint'>
+    <property name='realmName' value='Contacts Realm via Digest
+    Authentication'/>
+    <property name='key' value='acegi'/>
+    <property name='nonceValiditySeconds' value='10'/>
+    </bean>
+    TP 3.2
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 58Remember me
+    • Se rappeler de l’identité entre 2 sessions grâce à un cookie
+    • 2 méthodes
+    • Hash-Based Token (persistance en mémoire)
+    • Persistence Token (persistance en base)
+    • Nécessite un bean UserDetailService
+    • Le token est généré par le serveur et envoyé sous forme de
+    cookie au client
+    • Contenu du cookie
+    base64(username + ':' + expirationTime + ':' +
+    md5Hex(username + ':' + expirationTime + ':' password + ':' + key))
+    username: As identifiable to the UserDetailsService
+    password: That matches the one in the retrieved UserDetails
+    expirationTime: The date and time when the remember-me token expires, expressed in
+    milliseconds
+    key: A private key to prevent modification of the remember-me token
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 59Remember me : activation
+    •
+    http.rememberMe();
+    •
+    DEBUG TokenBasedRememberMeServices - Added remember-me cookie for user 'user',
+    expiry: 'Mon Jan 29 09:24:05 CET 2018'
+    TP 3.3
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 60Remember me :
+    TokenBasedRememberMeServices
+    • Possibilité de sauvegarder en base le token
+    • Pour vérifier qu'il vient bien de notre serveur ? En cas de reboot de l'application ?
+    <bean id='rememberMeFilter' class=
+    'org.springframework.security.web.authentication.rememberme.RememberMeAut
+    henticationFilter'>
+    <property name='rememberMeServices' ref='rememberMeServices'/>
+    <property name='authenticationManager' ref='theAuthenticationManager' />
+    </bean>
+    <bean id='rememberMeServices' class=
+    'org.springframework.security.web.authentication.rememberme.TokenBasedRem
+    emberMeServices'>
+    <property name='userDetailsService' ref='myUserDetailsService'/>
+    <property name='key' value='springRocks'/>
+    </bean>
+    <bean id='rememberMeAuthenticationProvider' class=
+    'org.springframework.security.authentication.RememberMeAuthenticationProv
+    ider'>
+    <property name='key' value='springRocks'/>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 61Remember me :
+    TokenBasedRememberMeServices
+    • Par défaut nécessite une table
+    create
+    • table persistent_logins (username varchar(64) not null,
+    series varchar(64) primary key,
+    token varchar(64) not null,
+    •
+    last_used timestamp not null)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 62Authentification remember-me
+    • On verra par la suite qu'un authentication remember-me n'a pas
+    la même valeur qu'une authentication user/password
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 63Authentification Anonyme
+    • Filtre : AnonymousAuthenticationFilter
+    • Est équivalent à une absence d'authentification
+    • Un utilisateur non logué à quand même des informations dans le
+    securityContextHolder
+    • C'est le AnonymousAuthenticationFilter qui s'occupe d'ajouter
+    ces informations
+    • Concrètement, l'anonymous ne possède qu'un seul rôle :
+    • ROLE_ANONYMOUS
+    • On peut s'en servir sur les fonctionnalités d'autorisation
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 64Authentification Anonyme
+    /login.jsp?login_error= at position 10 of 13 in additional filter
+    chain; firing Filter: 'AnonymousAuthenticationFilter'
+    Populated SecurityContextHolder with anonymous token:
+    'org.springframework.security.authentication.AnonymousAuthenticationTo
+    ken@da604f00: Principal: anonymousUser; Credentials: [PROTECTED];
+    Authenticated: true; Details:
+    org.springframework.security.web.authentication.WebAuthenticationDetai
+    ls@b364: RemoteIpAddress: 0:0:0:0:0:0:0:1; SessionId:
+    069DA67CD4E2DED89BF2C87A7E1F3594; Granted Authorities: ROLE_ANONYMOUS'
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 65Sessions
+    • Filtre SessionManagementFilter
+    • Regarde le contenu du SecurityContextHolder
+    • Si il existe un auth (non anonyme) ne fait rien
+    • Sinon regarde si la session du client est toujours valide
+    • Si oui, alors il renseigne le context de Sécurité
+    • Si non, il ne fait rien
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 66Sessions Concurrentes
+    • Les utilisateurs aiment bien
+    • Les administrateurs moins (partage de login)
+    • Les développeurs non plus (possible incohérences)
+    • Il est possible de limiter le nombre de session pour un utilisateur
+    • Au login (interdiction de se loguer tant qu'on a déjà une session ouverte)
+    • Au login (et on invalide la session déjà existante)
+    • Pour cela il faut préalablement activer la notification des sessions
+    à Spring (fichier web.xml)
+    <listener>
+    <listener-class>
+    org.springframework.security.web.session.HttpSessionEventPublisher
+    </listener-class>
+    </listener>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 67Sessions Concurrentes (2)
+    • Il faut ensuite un endroit ou stocker les sessions
+    • SessionRegistry
+    • Et enfin il faut dire à Security un nombre max de session
+    • -1 par défaut (illimité)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 68Gestion des sessions
+    • Toutes les sessions sont dans le SecurityContextHolder
+    • Automatiquement mise à jour
+    • Consultable/supprimable logiciellement
+    • Possibilité de limiter le nombre de sessions ouvertes en parallèle
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 69Sessions concurrentes
+    • Possibilité de limité le nombre de sessions ouvertes
+    • Fichier security.xml (Spring)
+    •
+    •
+    <session-management>
+    <concurrency-control
+    max-sessions='1'/>
+    </session-management>
+    • Fichier web.xml
+    <listener>
+    <listener-
+    class>org.springframework.security.web.session.HttpSessionEventPublisher</list
+    •
+    ener-class>
+    </listener>
+    •
+    •
+    • Permet de notifier au security context la fin d'une session
+    TP 3.4
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 70Information sur les utilisateurs connectés
+    • Les sessions sont stockées dans un bean SessionRegistry
+    • On peut consulter ce bean pour récupérer les sessions d'un utilisateur …
+    • … et invalider sa session par exemple (via son sessionId)
+    //recuperer ses sessions
+    List<SessionInformation> sessions = sessionRegistry.getAllSessions(auth, false);
+    …
+    …
+    //recuperation des informations d'une session
+    SessionInformation sessionInformation = sessionRegistry.getSessionInformation(sessionId);
+    …
+    …
+    //tuer une session
+    sessionInformation.expireNow();
+    TP 3.5
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 71Fonctionnalités d'autorisations
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 72Deux types de sécurisation
+    • Sécurisation des applications web
+    • Utilisation de filtres (servlet filters) pour intercepter les requêtes, traiter
+    l'authentification et gérer la sécurité
+    • Sécurisation au niveau des invocations de méthodes
+    • S'appuie sur Spring AOP
+    • Applique des aspects vérifiant que l'utilisateur à les droits suffisants pour
+    invoquer la méthode
+    • Dans tous les cas
+    • La gestion de la sécurité s'appuie d'abord sur une interception
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 73Intercepteurs de sécurité
+    • Classe abstraite AbstractSecurityInterceptor
+    • FilterSecurityInterceptor : intercepte les requêtes HTTP
+    • MethodSecurityInterceptor : intercepte les appels de méthode
+    • AspectJMethodSecurityInterceptor : idem mais avec AspectJ
+    2
+    4
+    3
+    5
+    1
+    6
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 74Schéma général : 4 niveaux de manager
+    • AuthenticationManager
+    • Responsable de l'identification de l'utilisateur
+    • AccessDecisionManager
+    • Il vérifie l'autorisation d'accès à la ressource sécurisée
+    • Pour cela il considère les informations d'authentification ainsi que les attributs de
+    sécurité associés à cette ressource
+    • RunAsManager
+    • Une étape optionnelle supplémentaire permettant d’attribuer une authentification
+    avec des droits supplémentaires pour accéder à des éléments internes
+    − Nécessaire pour certains types d’applications
+    • AfterInvocationManager
+    • Un niveau supplémentaire pour vérifier les droits d’accès aux données affichées
+    ou retournées par le service (rare)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 75Autorisation
+    • Basé sur les GrantedAuthority d'un Authentication
+    • AccessDecisionManager : décide de l’accès à une ressource
+    • En se basant sur une série de RoleVoter
+    • RoleVoter : une instance qui donne un avis sur l'accès
+    • ACCES_ABSTAIN
+    • ACCES_DENIED
+    • ACCES_GRANTED
+    • L'AccesDecisionManager liste les résultats et prend un décision
+    • Plusieurs stratégies (ou type d'implémentation):
+    • AffirmativeBased (ok si 1 voter ok)
+    • ConsensusBased (ok si majorité ok)
+    • UnanimousBased (ok si tous ok)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 76Autorisation (2)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 77Contrôle des accès
+    • En configurant le AccessDecisionManager
+    public interface AccessDecisionManager {
+    void decide(Authentication authentication, Object object,
+    Collection<ConfigAttribute> configAttributes) throws AccessDeniedException,
+    InsufficientAuthenticationException;
+    boolean supports(ConfigAttribute attribute);
+    }
+    boolean supports(Class<?> clazz);
+    • Les méthodes « supports »
+    • Considèrent le type de la ressource et ses attributs de configurations pour
+    décider si le AccessDecisionManager est apte à décider
+    • La méthode « decide »
+    • Réalise la décision (lève une exception ou pas)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 78Décision
+    • Le AccessDecisionManager ne décide pas seul
+    • Il prend ses décisions auprès d'un ou plusieurs AccessDecisionVoter
+    • Un votant peut s'abstenir, voter pour ou contre l'accès
+    − En utilisant les GrantedAuthority portées par le Authentication
+    • Plusieurs AccessDecisionManager sont proposés :
+    • AffirmativeBased : laisse l'accès si au moins un votant vote l'accès
+    • ConsensusBased : nécessite une majorité de votes positifs
+    • UnanimousBased : aucun vote négatif
+    < !-- pour la sécurité des méthode -->
+    <global-method-security access-decision-manager-ref='myAccessDecisionManagerBean'>
+    ...
+    </global-method-security>
+    < !-- pour la sécurité web -->
+    <http access-decision-manager-ref='myAccessDecisionManagerBean'>
+    ...
+    </http>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 79Abstention
+    • L'abstention a lieu lorsque la ressource ne réclame aucune
+    autorisation préfixée ROLE_
+    • Peut être contrôlée auprès du AccessDecisionManager
+    <bean id='accessDecisionManager'
+    class='org.springframework.security.vote.UnanimousBased'>
+    <property name='decisionVoters'>
+    <list>
+    <ref bean='roleVoter'/>
+    </list>
+    </property>
+    <property name='allowIfAllAbstain' value='true' />
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 80AccessDecisionVoter
+    • AuthenticatedVoter
+    • Permet de différencier entre anonymous, pleinement authentifié et
+    authentifié automatiquement par le remember-me
+    • L'attribut IS_AUTHENTICATED_ANONYMOUSLY est traité par lui
+    • CustomVoter
+    • Permet d'implémenter sa propre stratégie de vote
+    • RoleHierarchyVoter
+    • Permet de gérer des rôles hiérarchiques
+    • Exemple : ROLE_ADMIN ⇒ ROLE_STAFF ⇒ ROLE_USER ⇒ ROLE_GUEST
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 81L'interface AccessDecisionVoter
+    • Elle définit 3 constantes et 3 méthodes
+    int ACCESS_GRANTED = 1;
+    int ACCESS_ABSTAIN = 0;
+    int ACCESS_DENIED = -1;
+    boolean supports(ConfigAttribute attribute);
+    boolean supports(Class clazz);
+    int vote(Authentication authentication, Object object, ConfigAttributeDefinition config);
+    • Même principe que pour AccessDecisionManager
+    • Mais ici on ne fait que voter en renvoyant une des constantes
+    • Une implémentation proposée est RoleVoter
+    • Elle se base sur les attributs de configurations de la ressource
+    −
+    (ceux préfixés par ROLE_) avec les autorisations attribuées à l'utilisateur
+    • ACCESS_GRANTED est accordé lorsque les rôles coïncident
+    • Remarque : le préfixe ROLE_ peut être modifié
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 82Les élections !
+    • Possibilité de contrôler la sécurité d'une classe ou d'une méthode
+    • MethodSecurityInterceptor - Secure object: ReflectiveMethodInvocation: public
+    DEBUG
+    void com.oxiane.security.service.CountryService.deleteCountry(java.lang.String);
+    target is of class [com.oxiane.security.service.CountryService]; Attributes:
+    [[authorize: 'hasRole('Admin')', filter: 'null', filterTarget: 'null']]
+    DEBUG MethodSecurityInterceptor - Previously Authenticated:
+    org.springframework.security.authentication.UsernamePasswordAuthenticationToken@fec4
+    b7ad: Principal: org.springframework.security.core.userdetails.User@586034f:
+    Username: admin; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true;
+    credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities:
+    ROLE_ADMIN,ROLE_USER; Credentials: [PROTECTED]; Authenticated: true; Details:
+    org.springframework.security.web.authentication.WebAuthenticationDetails@380f4:
+    RemoteIpAddress: 0:0:0:0:0:0:0:1; SessionId: 8060A916778D3FB71BE6952389293AC0;
+    Granted Authorities: ROLE_ADMIN, ROLE_USER
+    DEBUG AffirmativeBased - Voter:
+    org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter@31
+    bcb993, returned: -1
+    DEBUG AffirmativeBased - Voter:
+    org.springframework.security.access.vote.RoleVoter@3a25baa2, returned: 0
+    DEBUG AffirmativeBased - Voter:
+    org.springframework.security.access.vote.AuthenticatedVoter@3eeb80fc, returned: 0
+    DEBUG ExceptionTranslationFilter - Access is denied (user is not anonymous);
+    delegating to AccessDeniedHandler
+    •
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 84Autorisation sur des requêtes
+    • HTTPSecurity s'occupe de sécuriser les requêtes http
+    • Pour les servlets
+    • Pour les .jsp
+    • Pour le mvc …
+    • Rappel : Faire du plus spécifique au plus général
+    • Exemple de configuration
+    http.authorizeRequests()
+    .antMatchers('/resources/**', '/login', '/logout',
+    '/index.jsp', '/login.jsp', '/forbidden.jsp').permitAll()
+    .antMatchers('/secure/user.jsp').access('hasRole('ADMIN')
+    or hasRole('USER')')
+    .antMatchers('/secure/admin.jsp').access('hasRole('ADMIN')')
+    .anyRequest().authenticated() ;
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 85Autorisation sur des requêtes
+    • AntMatcher((Methode,) ...expr)
+    • Peut prendre plusieurs patterns, et des verbes HTTP (GET,POST,DELETE)
+    • AnyRequest()
+    • MvcMatcher(...expr)
+    • RegexMatcher(expr)
+    • On peut créer ses propres matchers
+    TP 4.1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 86Mécanisme de sécurisation
+    • Penser à organiser le site en fonction des principaux rôles
+    • Un répertoire par grand rôle
+    • /secure
+    • /admin
+    • /monitoring
+    • Etc.
+    • Des sous répertoires pour des sous rôles
+    • /secure/configuration
+    • /secure/payment
+    • Etc.
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 87Autorisation sur des objets et méthodes
+    • Possibilité de contrôler la sécurité d'une classe ou d'une méthode
+    (Couche service)
+    • Nécessite d'activer les annotations
+    •
+    @EnableGlobalMethodSecurity(securedEnabled = true)
+    public class MethodSecurityConfig {
+    // ...
+    }
+    // OU pour les annotations standard JavaEE
+    • @EnableGlobalMethodSecurity(jsr250Enabled = true)
+    public class MethodSecurityConfig {
+    • // ...
+    }
+    •
+    • Il suffit alors d’annoter les méthodes d’une implémentation ou
+    d’une interface
+    • @Secured (Spring)
+    • @Role (JavaEE)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 88Sécurisation de méthode
+    • @Secured (historique Spring)
+    @Secured('IS_AUTHENTICATED_ANONYMOUSLY')
+    public Account[] findAccounts();
+    @Secured('ROLE_TELLER')
+    public Account post(Account account, double amount);
+    • JEE (JSR-250)
+    − @RolesAllowed, @PermitAll, @DenyAll, ...
+    <global-method-security jsr250-annotations='enabled' />
+    @PermitAll
+    public Account[] findAccounts();
+    @RolesAllowed('TELLER')
+    public Account post(Account account, double amount);
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 89Autorisation sur des objets et méthodes
+    • Spring permet d’être encore plus fin que de simple contraintes par
+    rôle
+    • en utilisant des annotations spécifiques
+    • Combiné avec une syntaxe basée sur des expressions
+    • Activation :
+    •
+    •
+    @EnableGlobalMethodSecurity(prePostEnabled = true)
+    public class MethodSecurityConfig {
+    // ...
+    }
+    • 4 Annotations
+    • @PreAuthorize(Expr)
+    • @PostAuthorize(Expre) (Utilise le retour de la méthode pour ses tests)
+    • @PreFilter(Expr) : filtre les collections en entrée d'une méthode
+    • @PostFilter(Expr) : filtre les collections en sortie d'une méthode
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 90Expression-Based Acces Control
+    • hasRole([role])
+    • hasAnyRole([role1,role2])
+    • hasAuthority([authority])
+    • hasAnyAuthority([authority1,authority2])
+    • principal
+    • authentication
+    • permitAll
+    • denyAll
+    • isAnonymous()
+    • isRememberMe()
+    • isAuthenticated()
+    TP 4.2
+    • isFullyAuthenticated()
+    • hasPermission(Object target, Object permission)
+    • hasPermission(Object targetId, String targetType, Object permission)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 91Sécurisation de méthode
+    • Sécurisation globale par Pointcut
+    • Extrêmement puissant, permet de sécuriser toute une application rapidement
+    <global-method-security>
+    <protect-pointcut expression='execution(* com.mycompany.*Service.*(..))'
+    access='ROLE_USER'/>
+    </global-method-security>
+    • Sécurisation spécifique d'un bean (ou plutôt classe de bean)
+    <bean:bean id='target' class='com.mycompany.myapp.MyBean'>
+    <intercept-methods>
+    <protect method='set*' access='ROLE_ADMIN' />
+    <protect method='get*' access='ROLE_ADMIN,ROLE_USER' />
+    <protect method='doSomething' access='ROLE_USER' />
+    </intercept-methods>
+    </bean:bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 92Sécurisation des objets de domaine (ACL)
+    • Contrôle par programmation possible
+    • Accès aux informations via le SecurityContextHolder
+    • Supports des méthodes Java EE standards de HttpServletRequest
+    − getRemoteUser()
+    − getUserPrincipal()
+    − isUserInRole(String)
+    • Mais pas suffisant pour ne laisser l'accès qu'à certaines données
+    • Nécessite une gestion Access Control List (ACL)
+    − Enregistre pour chaque objet de domaine les détails de qui peut travailler ou non avec cet objet
+    • Spring security fournit
+    • Un moyen de récupérer/modifier efficacement toutes les entrées ACL d'un objet
+    • Un moyen efficace de s'assurer que le principal a les droits sur l'objet
+    − Avant d'invoquer ses méthodes
+    − Après avoir invoqué ses méthodes
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 93Hiérarchie des rôles
+    • RoleHierarchieVoter est un voter avec le concept de hiérachie de
+    rôle
+    • Exemple de configuration :
+    <bean id='roleVoter'
+    class='org.springframework.security.access.vote.RoleHierarchyVoter'>
+    <constructor-arg ref='roleHierarchy' />
+    </bean>
+    <bean id='roleHierarchy'
+    class='org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
+    '>
+    <property name='hierarchy'>
+    <value>
+    ROLE_ADMIN > ROLE_STAFF
+    ROLE_STAFF > ROLE_USER
+    ROLE_USER > ROLE_GUEST
+    </value>
+    </property>
+    </bean>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 94Granted Authority Versus Role
+    • Deux moyens de donner des droits
+    • GrantedAuthority est plutôt destiné pour un privilège individuel
+    •
+    hasAuthority(‘READ_AUTHORITY’)
+    • Role destiner à un découpage macro d'une application
+    • hasRole(“ADMIN”)
+    • Mais cela reste un découpage sémantique
+    • Voir :
+    http://www.baeldung.com/spring-security-granted-authority-vs-
+    role
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 95Intégration dans une application
+    JEE
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 96Intégration dans l'API Servlet
+    • Spring security est interrogeable depuis l'API Servlet (v2.5)
+    • Et dans les JSP
+    • HttpServletRequest.getRemoteUser()
+    • == SecurityContextHolder.getContext().getAuthentication().getName()
+    • HttpServletRequest.getUserPrincipal()
+    •
+    Authentication auth = httpServletRequest.getUserPrincipal();
+    MyCustomUserDetails userDetails = (MyCustomUserDetails) auth.getPrincipal();
+    String firstName = userDetails.getFirstName();
+    String lastName = userDetails.getLastName();
+    •
+    •
+    • HttpServletRequest.isUserInRole(String)
+    boolean isAdmin = httpServletRequest.isUserInRole('ADMIN');
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 97Intégration dans l'API Servlet (2)
+    • l'API Servlet (v2.5+)
+    • HttpServletRequest.authenticate(HttpServletRequest,HttpServletR
+    esponse)
+    • True si le user est authentifié
+    • HttpServletRequest.login(String,String)
+    • Authentification du user
+    • HttpServletRequest.logout()
+    • AsyncContext.start(Runnable)
+    • Permet la propagation de l'authentification dans le Thread
+    • HttpServletRequest#changeSessionId()
+    • Pour se proteger d'une faille dans l'API Servlet 3.1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 98Localisation des messages
+    • Le Bean messageSource contient les messages de Spring
+    • classpath:org/springframework/security/messages contient les messages en
+    eux-mêmes (en Anglais de base)
+    • Il suffit de refaire le bean avec les bons messages
+    <bean •id='messageSource'
+    class='org.springframework.context.support.ReloadableResourceBundleMessageSource'>
+    <property
+    name='basename' value='classpath:org/springframework/security/messages_fr'/>
+    •
+    </bean>
+    •
+    • Ou de refaire un fichier messages_custom.properties avec ses traductions
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 99Taglib Security
+    • Rajoute des tags sécurité dans les .jsp
+    <%@• taglib prefix='sec' uri='http://www.springframework.org/security/tags'%>
+    • Authorize : activation selon les rôles
+    <sec:authorize access='hasRole('supervisor')'>
+    •
+    This content will only be visible to users who have
+    the 'supervisor' authority in their list of <tt>GrantedAuthority</tt>s.
+    •
+    •
+    </sec:authorize>
+    •
+    <sec:authorize url='/admin'>
+    •
+    This content will only be visible to users who are authorized to send requests to the
+    '/admin' URL.
+    </sec:authorize>
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 100Taglib Security (3)
+    • D'autres tags mineurs
+    • Authentication (bientôt deprecated)
+    • Accesscontrollist
+    • CsrfInput , csrfMetaTags (CSRF)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 101Taglib Exemple
+    • Afficher les rôles d'un utilisateur
+    <sec:authentication property='principal.authorities'
+    var='authorities' />
+    <c:forEach items='${authorities}' var='authority' varStatus='vs'>
+    <p>${authority.authority}</p>
+    </c:forEach>
+    TP 5
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 102WebFlux Security
+    • L'API WebFlux à ses propres paramètres de sécurité
+    @EnableWebFluxSecurity
+    public class HelloWebfluxSecurityConfig {
+    @Bean
+    public MapReactiveUserDetailsService userDetailsRepository() {
+    UserDetails user = User.withDefaultPasswordEncoder()
+    .username('user')
+    .password('user')
+    .roles('USER')
+    .build();
+    return new MapReactiveUserDetailsService(user);
+    }
+    }
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http
+    .authorizeExchange()
+    .anyExchange().authenticated()
+    .and()
+    .httpBasic().and()
+    .formLogin();
+    return http.build();
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 103Tester la sécurité
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 104Spring Test
+    • Rappel
+    • @RunWith(SpringJUnit4ClassRunner.class)
+    • Permet de lancer un test via l'API Spring Test
+    • @ContextConfiguration('/spring/application-config.xml')
+    • Va chercher le contexte de test
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 105Spring Security context Test
+    • Rajoute des annotations de test
+    • @WithMockUser(user)
+    • @WithMockUser(username='admin',roles={'USER','ADMIN'})
+    • @WithAnonymousUser
+    • On peut tester si oui ou non un user à accès a une ressource
+    @Test(expected = AccessDeniedException.class)
+    @WithAnonymousUser
+    public void anonymous() throws Exception {
+    countryService.deleteCountry('Suede');
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 106Spring Security context Test (2)
+    • Possibilité de créer des annotations customs
+    • Et réutilisable
+    • En exemple un administrateur
+    @Retention(RetentionPolicy.RUNTIME)
+    @WithMockUser(value='rob',roles='ADMIN')
+    public @interface WithMockAdmin { }
+    TP 6.1
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 107Spring Test MVC
+    • Il est possible de tester les droits sur une application Spring MVC
+    • De base Spring-MVC posséde une API de test
+    − @WebAppConfiguration pour initialiser un test MVC
+    • MockMvc permet de simuler des requêtes HTTP
+    • Et tester les résultats (contenu, code HTTP, model etc.)
+    • Il existe une surcouche sécurité à ce framwork
+    • Permettant de rajouter un contexte de sécurité (UserDetail)
+    • Permettant de rajouter des paramètres de test (CSRF)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 108Spring Webflux Test
+    @RunWith(SpringRunner.class)
+    @ContextConfiguration(classes = HelloWebfluxMethodApplication.class)
+    public class HelloWorldMessageServiceTests {
+    @Autowired
+    HelloWorldMessageService messages;
+    @Test
+    public void messagesWhenNotAuthenticatedThenDenied() {
+    StepVerifier.create(this.messages.findMessage())
+    .expectError(AccessDeniedException.class)
+    .verify();
+    }
+    @Test
+    @WithMockUser
+    public void messagesWhenUserThenDenied() {
+    StepVerifier.create(this.messages.findMessage())
+    .expectError(AccessDeniedException.class)
+    .verify();
+    }
+    }
+    @Test
+    @WithMockUser(roles = 'ADMIN')
+    public void messagesWhenAdminThenOk() {
+    StepVerifier.create(this.messages.findMessage())
+    .expectNext('Hello World!')
+    .verifyComplete();
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 109Spring Test MVC (2)
+    • Exemple :
+    • @Test
+    public void testAccesProtectedUrl() throws Exception {
+    •
+    •
+    }
+    mvc.perform(post('/url').with(csrf()).with(user('toto')).andDo(print())
+    .andExpect(status().isOk());
+    •
+    • Notes:
+    • Nécessite l'API servlet 3.0 (non disponible sur les repository central maven)
+    • Permet aussi de tester le login, logout, les accès anonymes
+    • L'URL de retour
+    • La View MVC retournée
+    • Compatible avec les annotations @MockUser
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    TP 6.2
+    Page 110Spring Security en application
+    lourde
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 111Sécurité des applications lourdes
+    • Pas vraiment le but de Spring Security
+    • Mais faisable
+    • Nécessite d'implémenter au minimum un Authentification
+    manager
+    • Et probablement un userDetailsService pour s'implémenter sur son modèle
+    applicatif
+    • Penser à mettre le contexte de sécurité au niveau de l'application
+    • À la place du niveau ThreadLocal
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 112Configuration avancée des
+    requêtes HTTP
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 113Protection contre les attaques CSRF
+    • CSRF ?
+    • Cross-Site Request Forgery
+    • Comment ?
+    • En faisait exécuter une requête HTTP dont on n'a pas les droits à un utilisateur
+    qui à les droits (admin)
+    •
+    « Hey, tu peux aller voir sur le lien http://appli/dropAllTables STP ?»
+    • Si l'admin est loggué, alors l'action sera réalisée.
+    • Solution :
+    • Le _CSRF Token
+    • Un token généré au login
+    • Tout les formulaires doivent contenir ce token
+    • Le token n'est connu que par une personne
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 114CRSF protection
+    • Depuis Spring 5 activé par défaut
+    • Désactivable
+    − http.csrf().disable();
+    • Généré automatiquement si la page de login est générée par Spring
+    • Sinon à rajouter manuellement dans la JSP
+    •
+    <input type='hidden' name='<c:out value='$
+    {_csrf.parameterName}'/>'
+    value='<c:out value='$
+    •
+    {_csrf.token}'/>'/>
+    •
+    • Ou en utilisant le tag jsp securiry
+    <sec:csrfInput />
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 115CRSF protection (2)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 116CORS
+    • CORS ?
+    • Cross-Origin Ressource Sharing
+    • Pourquoi faire ?
+    • Réceptionner des requêtes venant de l’extérieur ?
+    • Comment :
+    • En rajoutant un filtre dédie : CorsFilter
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 117CORS (2)
+    • Exemple
+    {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception
+    http.cors();
+    }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList('https://example.c
+    om'));
+    configuration.setAllowedMethods(Arrays.asList('GET','POST'));
+    UrlBasedCorsConfigurationSource source = new
+    UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration('/**', configuration);
+    return source;
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 118En-têtes de réponse HTTP
+    • Par défaut Spring ajoute les headers suivants :
+    • Cache-Control:no-cache, no-store, max-age=0, must-revalidate
+    • Expires:0
+    • Pragma:no-cache
+    • X-Content-Type-Options:nosniff
+    • X-Frame-Options:DENY
+    • X-XSS-Protection:1; mode=block
+    • On peut
+    • Rajouter des headers
+    • Désactiver les headers par défaut
+    • Modifier certains headers
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 119En-têtes de réponse HTTP
+    • Désactivation de la configuration par défaut
+    •
+    //desactivation des headers par defaut
+    http.headers().defaultsDisabled();
+    •
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 120En-têtes de réponse HTTP (cache)
+    • De base pas de cache pour les ressources sécurisées
+    • On peut le désactiver/activer manuellement
+    • //desactivation des headers par defaut
+    •
+    http.headers().defaultsDisabled();
+    •
+    • Spring MVC permet de supprimer le cache sur les ressources
+    @EnableWebMvc
+    public class MvcConf implements WebMvcConfigurer {
+    }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+    .addResourceHandler('/resources/**')
+    .addResourceLocations('/resources/')
+    .setCachePeriod(31556926);
+    }
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 121En-têtes de réponse HTTP (Frames)
+    • De base interdites
+    • Et activable
+    • http.headers().frameOptions().disable();
+    http.headers().frameOptions().deny();
+    • http.headers().frameOptions().sameOrigin();
+    •
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 122En-têtes de réponse HTTP (XSS-Protection)
+    • XSS
+    • Cross-Site Scripting
+    • De base présent
+    • Et modifiable
+    • http.headers().xssProtection().disable();
+    •
+    http.headers().xssProtection().xssProtectionEnabled(true);
+    http.headers().xssProtection().block(true);
+    •
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 123WSS
+    • Web Services Security
+    • Protocole de communications qui permet d'appliquer de la
+    sécurité aux services web
+    • WS-Security répond à trois problématiques principales :
+    • Comment signer les messages SOAP pour en assurer l'intégrité (éviter la
+    transformation par un tiers) et la non-répudiation.
+    • Comment chiffrer les messages SOAP pour en assurer la confidentialité.
+    • Comment attacher des jetons de sécurité pour garantir l'identité de l'émetteur.
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 124Conclusion
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 125Rappel à l'ordre
+    • Ça ne sert à rien de faire de la sécurité sans HTTPS !
+    • Sinon les identifiants passent en clairs sur le réseau
+    • Pensez à activer l'HTTPS sur les serveurs de production
+    • Obligatoire si l'application est accessible depuis l’extérieur
+    • Les authentifications 'chiffrés' ne sont pas sécurisés
+    • Par exemple Digest fait des MD5
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 126Spring Security
+    • Un framework (pas simple) mais complet
+    • Dure à mettre en place
+    • Mais facile à maintenir
+    • Séparation claire et simple entre le fonctionnel et la sécurité
+    • 100 % Spring
+    • S’intègre avec la majorité des providers de sécurité
+    • Hautement customisable
+    • Open source (et gratuit)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 127Pour aller plus loin
+    • Spring Boot !
+    • Starter de projet web Spring
+    • Customisable (Security, MVC, data, batch etc.)
+    • Permet de construire une application Spring en quelques minutes
+    • Mais semble magique au début...
+    • Jhipster
+    • Générateur de code d'application basé sur Spring boot
+    • Avec des modules en plus
+    − Angular 5 (avec génération de front) et bientôt React
+    − Génération de Model/Dao/Service
+    − Authentification/création de compte/mailing/administration généré
+    − Compatible cloud (Docker, microservice, loadbalancing et serveur de configuration)
+    ©Copyright OXIANE- 98, avenue du Gal Leclerc 92100 Boulogne - Tél : +33 1 55 60 76 72 - Fax : +33 1 55 60 76 73 - formation@oxiane.com - www.oxiane.com
+    Page 128"
+
+}

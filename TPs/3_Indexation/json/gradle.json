@@ -1,0 +1,47 @@
+{
+    "id": 100,
+    "titre": "Gradle in Action",
+    "sujet" : "Gradle in Action is a comprehensive guide to end-to-end project automation with Gradle. Starting with the basics, this practical, easy-to-read book discusses how to build a full-fledged, real-world project. Along the way, it touches on advanced topics like testing, continuous integration, and monitoring code quality. You'll also explore tasks like setting up your target environment and deploying your software.",
+    "auteur": [
+        "Benjamin Muschko"
+    ],
+    "date": "2017-02-01T00:00:00Z",
+    "mots-clefs" : [
+        "DevOps",
+        "Build"
+    ], 
+    "content_type": "application/pdf",
+    "nb_pages": 240,
+    "language": "en",
+    "content" : "Some software project managers hold strongly to the myth that testing costs too
+    much, takes too much time, does not help them build the product, and can create
+    hostility between the tester(s) and the development team. You will find these are the
+    very people who would spend the least on testing.
+    On the other hand, there are smarter software managers who understand that
+    testing is an investment in quality. Hence, they tend to spend more on testing.
+    Efficient test project management produces a positive return, fits within the overall
+    project schedule, has quantifiable findings, and is seen as a definite contributor to
+    the project.
+    However, as developing software overruns, as it normally does, time is at a
+    premium. As you may know or have experienced, 'manual' testing, especially
+    regression testing can be exhausting. A time-consuming and tedious process, it is
+    inefficient and conflicts with today's shorter application development cycles. As a
+    result, it gets in the way to test an application thoroughly—enabling critical bugs to
+    slip through undetected. What's more, manual tests are prone to human error and
+    inconsistencies that can distort test results.
+    Can we do without automation? Yes, of course—if time is abundant and your client
+    (or boss) is NOT on your tail for the application's next release. However, for most of
+    the time, this is not the case. In software testing, time is a determining factor and the
+    effective use of automation CAN help improve the testing speed.
+    On the other hand, despite of the appeals of test automation, we need to bear in
+    mind that test automation may just be suitable for only parts of the software testing
+    process. Automated testing IS NOT a total replacement for manual testing. Certain
+    aspects of testing an application would rely more on the human tester than on
+    test automation. The ultimate testers still are the human testers themselves; where
+    applicable, test automation only complements manual testing. Test automation may
+    not test any better than the human tester, but if implemented wisely, can certainly
+    help the tester test faster. Since certain testing of the application can be automated,
+    the tester can spend more quality time on more important and critical aspects of the
+    testing. Ultimately, the tester can test better and more effectively."
+
+}

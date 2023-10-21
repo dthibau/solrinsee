@@ -1,0 +1,2075 @@
+{
+    "id": 108,
+    "titre": "Groovy",
+    "sujet" : "Le langage de script Groovy",
+    "auteur": [
+        "Dierk König",
+        "Paul King"
+    ],
+    "date": "2019-05-01T00:00:00Z",
+    "mots-clefs" : [
+        "Java",
+        "Développement"
+    ], 
+    "content_type": "application/odt",
+    "nb_pages": 199,
+    "language": "fr",
+    "content" : "Drools
+    David THIBAU – 2019
+    david.thibau@gmail.com
+    2Agenda
+    • Introduction
+    –
+    –
+    –
+    –
+    BRMS
+    Use cases
+    Drools Rule’s engine
+    IDE Installation
+    • Getting started
+    – Session stateless
+    – Session stateful
+    – Agenda and conflicts
+    • Other ways to express
+    rules
+    – Creating a DSL
+    – Decision tables
+    – Rule’s template
+    • Rules and Processes
+    – Jbpm and Drools interaction
+    – Rule nodes
+    • DRL syntax
+    –
+    –
+    –
+    –
+    –
+    Main structural elements
+    Rules and attributes
+    LHS / RHS
+    Queries, Agregation
+    Complex Event Processing
+    3Introduction
+    BRMS
+    Use cases
+    Drools Rule’s engine
+    IDE Installation
+    4The problem
+    Today, the main challenge for business
+    applications is agility
+    Applications must be able to adapt
+    quickly and react to:
+    –Functional evolutions
+    –Changes in legislation
+    –Changes in organisation
+    –…
+    Changes in business rules
+    5Where to implement business
+    rules?
+    Stored as configuration properties in files or
+    database ?
+    => Not suited for such a rule
+    If the customer lives in Paris, is over 55 years old
+    and has been a customer for more than 2 years,
+    give a 10% discount
+    Implemented in source code
+    –Low maintenability
+    –Code spaghetti which may be unefficient6BRMS
+    A business rule management system (BRMS)
+    identifies the notion of business rule as a
+    resource that can be managed independently of
+    the application code
+    –Rules can be edited, versionned monitored
+    by a business expert
+    –Independently tested
+    –Independently documented, audited
+    –Independently deployed
+    7Rule’s engine
+    A BRMS include a rule’s engine
+    Which evaluates IF-THEN instructions based upon
+    the business rules
+    Lorsque les conditions des règles sont satisfaites
+    (IF), il exécute les actions associées (THEN) qui
+    généralement modifient le modèle
+    => La programmation devient alors déclarative
+    => La logique métier n'est plus dispersée dans le
+    code mais centralisée dans le repository de
+    règles
+    8Usage
+    Rule’s engine :
+    – Parses and compile the set of rules. (Once at the startup
+    of the application for instance)
+    Client (code applicatif) :
+    – Get a reference to the rule’s engine
+    – Insert objects (facts) in the working memory
+    – Ask the engine to trigger rules
+    – Retreive the objetcs updated by the rule’s engine
+    9Setup
+    Adopting a rule-based solution requires:
+    –Business Rules Identification: Business Expert
+    –Their organization and their implementation in a
+    rule language: Business / technical expert
+    –Integrating the Rules Service into the Application
+    (Build / Deploy): Technical
+    –The provision of a rules management interface
+    (BRMS Tool): Business / Technical
+    –The implementation of update procedure
+    (Automation of tests / Deployment): Technical
+    10Considerations
+    ➢
+    ➢
+    ➢
+    ➢
+    A rule engine is based on complex
+    technologies
+    It's hard to rely on a black box
+    How the rules are triggered is not very
+    intuitive
+    Rules extraction is not always easy
+    11Use cases
+    12Benefits
+    ●
+    ●
+    ●
+    ●
+    Declarative programmation : Rule engines allow you to specify
+    'What to do' and not 'How to do it'. They are able to solve difficult
+    problems and in addition to providing explanations!
+    Separation of concern : The data is in domain objects, the logic
+    centralized in a rules file (different from the OO approach that
+    encapsulates attributes and methods). The business logic is no
+    longer dispersed
+    Centralization of knowledge : Everything is centralized in the
+    knowledge base, relatively readable and can be used as
+    documentation
+    Understandable rules : By defining language specific to the domain
+    or the trade, the rules are expressed in quasi-natural language and
+    become accessible to the business experts
+    13When to use a rules engine ?
+    The problem is too complex for the classical code (optimization problems
+    for example, expert system)
+    The problem is not complex but no robust solution is needed.
+    The logic often changes, in this case the rules can be changed quickly
+    without too much risk.
+    The business experts exist but are not technical. The rules then make it
+    possible to express the business logic in their own terms.
+    14When not to use rules engine?
+    A rule engine is just a part of a complex application, you
+    do not have to implement everything as rules
+    A good indicator is the degree of coupling between the
+    rules.
+    ●
+    If triggering a rule invariably triggers a rule chain,
+    then the implementation of this rule-based logic
+    may not be appropriate, a decision tree may be
+    sufficient
+    15Domains and use cases
+    Domains
+    –
+    –
+    –
+    –
+    Finance and Insurance
+    Regulation, government rules
+    Ecommerce
+    Risk management
+    Use cases
+    –
+    –
+    –
+    –
+    –
+    –
+    Authorization of access based on several criteria (role,
+    ownership of the entity, organization, location, etc.)
+    Application customization (eg management of a
+    personalized homepage of an e-commerce site)
+    Diagnostic
+    Complex validation
+    Workflow / Orchestration
+    Problem of routing, Optimization of planning, storage, ...
+    16The rule’s engine Drools
+    17Rule’s engine
+    A rule’s engine is composed of a knowledge base, an inference
+    engine and a working memory
+    –The knowledge base groups the compiled rules
+    –The client application inserts facts (objects of the domain
+    model) in the working memory
+    –The inference engine, able to handle large volume of rules
+    and facts, has the role of comparing the facts to the
+    conditions of the rules,
+    if the conditions of the rules are satisfied the corresponding
+    actions are performed.
+    => actions modify the facts of the working memory, which
+    can trigger the activation of other rules.
+    18Agenda
+    When matching the rules, it is possible that several
+    rules are active simultaneously, it is said that they
+    are in conflict.
+    The Agenda component is responsible for managing
+    the execution order of the conflicting rules by
+    using a conflict resolution strategy. (priority or
+    other)
+    19Rule’s engine architecture
+    20Pattern matching, ReteOO and
+    PHREAK
+    The treatment of comparing the facts to the rules is called
+    the Pattern Matching. There are many pattern matching
+    algorithms: Linear, Rete, Treat, Leaps.
+    Drools starts to implement and optimize the Rete algorithm
+    in an object technology. (ReteOO)
+    ●
+    ●
+    This algorithm is particularly effective when the dataset (the facts) changes
+    regularly but in small proportions because the rule engine remembers the rules
+    that have already matched
+    It consumes lots of memory
+    In latest versions, Drools implements a new version of the
+    algorithm called PHREAK
+    ●
+    Mainly, ReteOO memory optimization
+    21Rete’s principles
+    The algorithm is performed in 2 steps
+    – The compilation of rules creates a discriminant network
+    composed of different nodes :
+    • TypeNode : Relative to fact Type
+    • Alpha : Constraint on a fact
+    • Beta : Comparaison between a tuple of objects .
+    • Rule : Activation of a specific rule
+    – The pattern matching. Executed whenever the working
+    memory changes. Facts are introduced into the
+    network and crosses the nodes if the conditions are
+    satisfied. Some nodes (Beta) have an associated
+    memory which stores the facts that have reached the
+    node.
+    22Example
+    23Forward or backward chaining
+    We can distinguish 2 kinds of rule’s engine
+    – Forward chaining . The engine is driven by data:
+    from a fact, rules apply, propagate and end with a
+    conclusion.
+    –
+    Backward chaining . The engine start from the
+    rules to go back to the rules
+    Drools 5 was a forward chaining .
+    Drools 6 is hybrid but default to backward chaining
+    24Forward chaining
+    25Backward chaining
+    26ReteOO optimizations
+    ReteOO is the algorithm of versions 3, 4
+    and 5 of Drools.
+    The job of pattern matching is done every
+    time the facts in memory changes (insert,
+    update, delete)
+    => This can cause a lot of unnecessary
+    work (inserting fact not causing,
+    executing rules)
+    27PHREAK algorithm
+    Drools6 introduces the new PHREAK
+    algorithm that improves ReteOO
+    – PHREAK is equivalent to ReteOO when
+    the number of rules remains moderate
+    but avoids performance losses when
+    the number of rules grows
+    – PHREAK also allows performance gains
+    when using calendar groups and
+    priority attributes (salience) rules
+    28Phreak’s principles
+    The main differences with ReteOO are:
+    – Phreak is lazy, the pattern matching
+    work is only done when an explicit rule
+    is triggered (fireAllRules() method)
+    – It is chained backward, each eligible
+    rule is evaluated independently of the
+    others
+    29Installation
+    30Installation IDE
+    Drools fournit des plugins Eclipse qui
+    permet de récupérer toutes les
+    dépendances nécessaires
+    – Java 1.5+ est alors requis
+    – Eclipse 3.4+
+    – Eclipse GEF 3.4
+    31Jars et dépendances
+    knowledge-api.jar : Interfaces et usines. Identifie clairement
+    l'API utilisateur de l'API moteur. Requis au runtime
+    knowledge-internal-api.jar : Interfaces et usines à usage
+    interne
+    drools-core.jar : Le moteur implémentant les algorithmes de
+    pattern matching. Requis au runtime
+    drools-compiler.jar : Compilateur des règles. Requis au runtime
+    si les règles n'ont pas été pré-compilées
+    drools-jsr94.jar : Couche d'implémentation de la JSR-94 au
+    dessus de drools-compiler. Cependant, en général il est plus
+    facile d'utiliser l'API Drools
+    drools-decisiontables.jar : Compilateur pour les tables de
+    décision supportant les formats excel et CSV.
+    32Maven, Gradle, Ivy, Buildr,
+    Ant
+    Les jars sont également disponibles dans les repository Maven et Jboss.
+    <dependencyManagement><dependencies><dependency>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-bom</artifactId>
+    <type>pom</type>
+    <version>...</version>
+    <scope>import</scope>
+    </dependency>
+    ...
+    </dependencies></dependencyManagement>
+    <dependencies><dependency>
+    <groupId>org.kie</groupId>
+    <artifactId>kie-api</artifactId>
+    </dependency>
+    <dependency>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-compiler</artifactId>
+    <scope>runtime</scope>
+    </dependency>
+    ...
+    <dependencies>
+    33The eclipse plug-in
+    34Features
+    ➢
+    ➢
+    ➢
+    ➢
+    ➢
+    Textual or graphical editor, supporting DRL and
+    DSL (coloring, completion)
+    Graphical editor for processes.
+    Wizards for project creation, for .drl, .brl, .dsl
+    files, decision tables, processes
+    Specific editor for DSLs managing DSL / DRL
+    mappings
+    Rule’s validation
+    35Rule project
+    The plugin adds a 'Drools Builder' which validates and
+    compiles the rules when rule’s files are updated.
+    (If the project contains a lot of rules, you may need to
+    disable this feature)
+    36Wizards
+    37Rule’s editors
+    Text editor
+    Handles .drl or .rule files
+    Support du dsl
+    Completion : Control+Space
+    Guided Rule Editor
+    Manages .brl files
+    38Drool’s views
+    For debugging, the plugin offers several views to inspect
+    the rules engine.
+    These views are available when the execution reaches a
+    breakpoint
+    1. The Working Memory View allow to inspect the facts
+    in memory
+    2. The Agenda View allow to see the activated ruels in
+    the agenda. For each rule, the associated variables are
+    displayed.
+    3. The Global Data View allow to see all the global
+    variables available in the session.
+    39The audit view
+    The audit view allow to display a log which can be
+    generated with the following code :
+    KieRuntimeLogger logger =
+    KieServices.Factory.get().getLoggers().newFileLogger(k
+    session, 'logdir/mylogfile');
+    ksession.insert(...);
+    ksession.fireAllRules();
+    // stop logging
+    logger.close();
+    Or which has been configured via kmodule.xml
+    40Events of the logfile
+    1. Object inserted :
+    2. Object updated :
+    3.Object destroyed :
+    4. Activation created :
+    5. Activation canceled :
+    6. Activation executed :
+    7. Sequence of starting or ending of a rule :
+    8. Activation/desactivation of a rules’s group :
+    9. Add/remove a rule’s package :
+    10. Add/remove a rule :
+    41Example
+    42Rete view
+    43Rete view legend
+    ●Green: Input point
+    ●Red : ObjectTypeNode
+    ●Blue : AlphaNode (Constraint)
+    ●Yellow: Adapter of the left input
+    ●Green : BetaNode
+    ●Black : Rule node
+    Selection update the properties view
+    Lab0 : IDE Setup
+    44Getting started
+    Stateless Session
+    Stateful Session
+    Agenda and conflicts
+    Le plugin Eclipse
+    45Main classes
+    KieServices : Singleton giving access to Kie
+    services (Container, Loggers, persistence,
+    Serializer, ...)
+    KieContainer : The container responsible for
+    locating the configuration of knowledge bases
+    and sessions, ...
+    KieModule : The configuration backed by a
+    kmodule.xml
+    KieBase : A compiled knowledge base
+    KieSession : API with the working memory.
+    46Types of sessions
+    Two types of Drools session are
+    possible :
+    – stateless : StatelessKieSession. (Do not
+    use inference)
+    – stateful : KieSession
+    47Stateless session
+    48Stateless Knowledge Session
+    Stateless sessions are the simplest case because they do not use
+    the inference engine.
+    You can think about a function that we would pass arguments and
+    that would cause a result.
+    Use cases of stateless sessions :
+    –Validation: Is a person eligible for a loan?
+    –The calculation: Calculate a reduction
+    –Routing or filtering: Filter emails, forward messages to
+    destinations
+    –...
+    49Sample : The domain model
+    (facts)
+    public class Applicant {
+    private String name;
+    private int age;
+    // getter and setter methods here
+    }
+    public class Application {
+    private Date dateApplied;
+    private boolean valid;
+    // getter and setter methods here
+    }
+    50Sample - Rules
+    package com.company.license
+    rule 'Is of valid age'
+    when
+    Applicant( age < 18 )
+    $a : Application()
+    then
+    $a.setValid( false );
+    end
+    rule 'Application was made this year'
+    when
+    $a : Application( dateApplied > '01-jan-2014' )
+    then
+    $a.setValid( false );
+    end
+    51Pattern matching (Rete)
+    When an instance of an Applicant is inserted in the engine,
+    this fact is evaluated against the constraints of the rules.
+    ●
+    ●
+    In this case, the 2 constraints of the first rule (constraint on
+    the type and the age field).
+    A constraint on an object type plus one or more constraints
+    on its fields is called a pattern.
+    When an inserted instance matches the pattern, the consequence
+    of the rule is executed.
+    The notation $a represents a variable to reference the object
+    matched in the consequence. Its properties can be updated in
+    the consequence part.
+    The ('$') character is optional but makes the expression of the rule more
+    readable.
+    52Configuration
+    In case of a classpath container, the file
+    kmodule.xml must be located in;
+    ressources/META-INF/kmodule.xml
+    For the default configuration, this file is
+    empty :
+    <?xml version='1.0' encoding='UTF-8'?>
+    <kmodule xmlns='http://jboss.org/kie/6.0.0/kmodule'/>
+    53Container’s creation
+    // Get the Singleton
+    KieServices kieServices = KieServices.Factory.get();
+    // Load the module from the classpath
+    // Compile drl files found
+    // Set the compiled result
+    KieContainer kContainer =
+    kieServices.getKieClasspathContainer();
+    54Execution
+    // Statless session creation
+    StatelessKieSession ksession = kContainer.newStatelessKieSession();
+    Applicant applicant = new Applicant( 'Mr John Smith', 16 );
+    Application application = new Application();
+    assertTrue( application.isValid() );
+    // Execution of the rules for this 2 facts
+    ksession.execute(
+    Arrays.asList( new Object[] { application, applicant } ) );
+    assertFalse( application.isValid() );
+    55BatchExecutor and
+    CommandFactory
+    The methods execute(Object object) and
+    execute(Iterable objects) are shortcuts
+    for : execute(Command command)
+    of the BatchExecutor interface
+    For instance, the second method is
+    equivalent to :
+    ksession.execute(
+    CommandFactory.newInsertIterable( new Object[] {
+    application, applicant } ) ) ;
+    56BatchExecutor and
+    CommandFactory
+    BatchExecutor are CommandFactory are particulary useful for
+    working with several commands and results avec plusieurs
+    commandes et plusieurs identifiants de résultats :
+    List<Command> cmds = new ArrayList<Command>();
+    cmds.add(CommandFactory.newInsert( new Person( 'Mr John Smith' ), 'mrSmith' );
+    cmds.add(CommandFactory.newInsert( new Person( 'Mr John Doe' ), 'mrDoe' );
+    BatchExecutionResults results =
+    ksession.execute( CommandFactory.newBatchExecution( cmds ) );
+    assertEquals( new Person( 'Mr John Smith' ), results.getValue( 'mrSmith' ) );
+    Lab1.1 : Stateless SessionStateful session
+    58Stateful Session
+    Stateful session have a longer life cycle and allow
+    iterative update of the facts .
+    Use cases are :
+    –Monitoring : Stock market monitoring and semi-
+    automatic purchasing
+    –Diagnosis: Discovery of fault, medical diagnosis
+    –Logistics: Delivery tracking, provisionning
+    –Compliance: Validation of legislation
+    59Stateful versus stateless
+    Unlike a Stateless Session, the dispose ()
+    method must be called to avoid memory leaks
+    (KieBase contains references to Stateful
+    Sessions)
+    A Stateful Knowledge Session is simply called
+    KieSession.
+    KieSession suppors also the interface
+    BatchExecutor
+    – But, the method fireAllRules is not triggered
+    automatically.
+    60Sample – Domain model
+    public class Room {
+    private String name
+    // getter and setter methods here
+    }
+    public class Sprinkler {
+    private Room room;
+    private boolean on;
+    // getter and setter methods here
+    }
+    public class Fire {
+    private Room room;
+    // getter and setter methods here
+    }
+    public class Alarm { }
+    61Sample – Rule
+    rule 'When there is a fire turn on the sprinkler'
+    when
+    Fire($room : room)
+    $sprinkler : Sprinkler( room == $room, on ==
+    false )
+    then
+    modify( $sprinkler ) { setOn( true ) };
+    System.out.println( 'Turn on the sprinkler for room
+    ' + $room.getName() );
+    end
+    62Inference and modify
+    Unlike the StatelessSession example, which
+    used the standard Java syntax to modify the
+    attribute of a fact, using the modify
+    statement can warn the engine of changes of
+    the facts and thus allow it to make other
+    pattern matching.
+    This is called inference
+    63not operator
+    The not operator is used to match when no
+    instance of the object exists in the working
+    memory:
+    rule 'When the fire is gone turn off the sprinkler'
+    when
+    $room : Room( )
+    $sprinkler : Sprinkler( room == $room, on == true )
+    not Fire( room == $room )
+    then
+    modify( $sprinkler ) { setOn( false ) };
+    System.out.println( 'Turn off the sprinkler for room ' +
+    $room.getName() );
+    end
+    64exists operator
+    The operator exist test the
+    existence of a fact :
+    rule 'Raise the alarm when we have one or more
+    fires'
+    when
+    exists Fire()
+    then
+    insert( new Alarm() );
+    System.out.println( 'Raise the alarm' );
+    end
+    65retract instruction
+    The instruction retract allows to remove a fact
+    from working memory
+    rule 'Cancel the alarm when all the fires have gone'
+    when
+    not Fire()
+    $alarm : Alarm()
+    then
+    retract( $alarm );
+    System.out.println( 'Cancel the alarm' );
+    end
+    66Creation of a stateful session
+    // Compile the drl files found in the classpath
+    // Set the result in the container
+    KieServices kieServices = KieServices.Factory.get();
+    KieContainer kContainer = kieServices.getKieClasspathContainer();
+    // Creation of the stateful session
+    KieSession ksession = kContainer.newKieSession();
+    67Execution
+    String[] names = new String[]{'kitchen', 'bedroom', 'office',
+    'livingroom'};
+    Map<String,Room> name2room = new HashMap<String,Room>();
+    for( String name: names ){
+    Room room = new Room( name );
+    name2room.put( name, room );
+    ksession.insert( room );
+    Sprinkler sprinkler = new Sprinkler( room );
+    ksession.insert( sprinkler );
+    }
+    ksession.fireAllRules() ;
+    > Everything is ok
+    68FactHandle
+    A FactHandle allow to obtain a reference to an inserted fact in the
+    working memory.
+    Fire kitchenFire = new Fire( name2room.get( 'kitchen' ) );
+    Fire officeFire = new Fire( name2room.get( 'office' ) );
+    FactHandle kitchenFireHandle = ksession.insert( kitchenFire );
+    FactHandle officeFireHandle = ksession.insert( officeFire );
+    ksession.fireAllRules() ;
+    > Raise the alarm
+    > Turn on the sprinkler for room kitchen
+    > Turn on the sprinkler for room office
+    This reference allow to remove the fact later :
+    ksession.retract( kitchenFireHandle );
+    ksession.retract( officeFireHandle );
+    ksession.fireAllRules() ;
+    > Turn on the sprinkler for room office
+    > Turn on the sprinkler for room kitchen
+    > Cancel the alarm
+    > Everything is ok
+    69Agenda and conflicts
+    70Methods versus Rules
+    Methods :
+    –
+    –
+    –
+    They are explicitly called
+    Specific instances are passed as arguments
+    A call causes a single run
+    Rules :
+    –
+    –
+    –
+    They are never explicitly called
+    Specific instances can not be passed as an
+    argument
+    A rule can fire once, several times, or no time.
+    71Activations, Agenda and
+    conflicts (Drools6)
+    When calling fireAllRules(), the rules are evaluated
+    independently of each other
+    The agenda chooses the first rule based on the active
+    activation group and the salience attributes of the rule. If
+    2 rules have the same precedence, the declaration’s
+    order is taken in account
+    If the conditions of a rule are met, it is triggered
+    immediately.
+    ●
+    If the consequence of the rule updates the working
+    memory, the inference occurs
+    72Life cycle of the Agenda
+    73Agenda groups
+    Agenda groups allow to partition rules
+    in groups that are themselves placed in
+    an execution stack
+    The agenda executes the rules of the
+    group placed on the top of the stack
+    When all the rules have been executed,
+    the agenda pops aother group from the
+    stack.
+    75Inference and maintenabilty
+    The insertion of a new fact from a previous knowledge may lead
+    to more maintenability
+    rule 'Infer Adult'
+    when
+    $p : Person( age >= 18 )
+    then
+    insert( new IsAdult( $p ) )
+    end
+    The other rules can be based on being an adult rather than
+    the value 18. Adaptation to other specification will be
+    facilitated
+    76logicalInsert
+    logicalInsert retract the fact as soon as the when clause
+    becomes false again :
+    rule 'Infer Child' when
+    $p : Person( age < 16 )
+    then
+    logicalInsert( new IsChild( $p ) )
+    end
+    The fact IsChild ($ p) is automatically retracted as soon as
+    the person reaches 16
+    77Engine’s listener
+    78Event Model
+    Kie provides an event model that allows
+    listeners to be aware of motor events such as
+    triggering a rule, inserting a fact, and so on.
+    This allows separation of trace or audit activities
+    The KieRuntimeEventManager interface is
+    implemented by KieRuntime which provides 2
+    interfaces:
+    – RuleRuntimeEventManager
+    – And ProcessEventManager.
+    79Provided listeners of Drools
+    The RuleRuntimeEventManager interface
+    allows the addition or removal of
+    listeners who are then aware of the
+    events concerning the working memory
+    and the agenda
+    Drools provides 2 listeners
+    DebugRuleRuntimeEventListener and
+    DebugAgendaEventListener that
+    displays debug messages
+    80Example
+    ksession.addEventListener( new
+    DefaultAgendaEventListener() {
+    public void afterMatchFired(AfterMatchFiredEvent event)
+    {
+    super.afterMatchFired( event );
+    System.out.println( event );
+    }
+    });
+    ksession.addEventListener( new
+    DebugRuleRuntimeEventListener() );
+    81KieRuntimeLogger
+    KieRuntimeLogger also uses the event
+    system to create a trace file that can be
+    viewed with the Eclipse audit viewer
+    KieRuntimeLogger logger =
+    KieServices.Factory.get().getLoggers().newFileLo
+    gger(ksession, 'logdir/mylogfile');
+    ...
+    logger.close();
+    82Channels
+    A channel is a standardized way to transmit
+    data from within a session to the external
+    world.
+    Alternative to globals.
+    Technically, Channel is a Java interface with
+    a single method :
+    void send(Object object)
+    Channels can only be used in the RHS of our
+    rules as a way to send data to outside
+    83Registration
+    Channels must be registered :
+    ksession.registerChannel('audit-channel',
+    auditChannel);
+    Then can be used in rules :
+    rule 'Send Suspicious Operation to Audit
+    Channel'
+    when
+    $so: SuspiciousOperation()
+    then
+    channels['audit-channel'].send($so);
+    end
+    Lab1.2 : Stateful Session
+    84Rule syntax : DRL
+    Main elements
+    Rule’s attributes
+    LHS
+    RHS
+    Query
+    DSL
+    Decision tables
+    85Main elements
+    86.drl files
+    A rules file is a simple text file with the extension .drl
+    It has the following structure :
+    –package : Namespace
+    –imports : Java types used
+    –declare : Internal declaration of new types
+    –globals : Globals variables which can accessed from
+    outside the session
+    –functions : Reuse of logic
+    –queries : Fact queries
+    –rules : Rules
+    It is also possible to distribute the rules over several files which
+    then usually have the .rule extension
+    87Structure of a rule
+    rule 'name'
+    attributs
+    when
+    LHS
+    then
+    RHS
+    end
+    Punctuation ', line breaks are optional
+    Attributes are optional
+    ✗
+    LHS is the conditional part of the rule
+    ✗
+    RHS is a block that allows to specify in different dialects a code to
+    execute.
+    ✗
+    88Keyword
+    Keyword :
+    –Hard (true, false, accumulate, collect, from, null,
+    over, then, when). Can not be used as object ID
+    –Soft : only recognized in their context (package,
+    import, attributes, rule, ...)
+    The escape character is ` :
+    Holiday( `when` == 'july' )
+    Comments :
+    –line : # ou //
+    –multi-lines : /* .... */
+    89Error message
+    1st block : Error code
+    2nd block : Information on the column and the
+    row.
+    3rd block : Description of the error.
+    4th block optional : First context of the error.
+    Generally, the rule, the function, the query where
+    the error occured.
+    5th bloc optional : Identify the pattern where the
+    90
+    error occured.Package
+    A package groups together a set of rules, imports, and globals
+    that are related.
+    A package represents a namespace and must be unique in
+    the knowledge base. It follows the naming conventions
+    of Java packages
+    ●
+    ●
+    ●
+    If the rules of the same package are distributed over
+    several files. Only one file contains the package
+    configuration.
+    Items declared in a package can be in any order, except
+    for the package statement.
+    The ';' are optional.
+    91Import
+    import instructions are similar to java imports
+    The full name of the Java types must be specified.
+    Drools automatically imports the Java classes from the
+    package of the same name and the package
+    java.lang.
+    92Global
+    global defines global variables
+    – Global variables can be used in the
+    consequences of the rules.
+    – They are not inserted into working
+    memory and therefore should not be
+    used as conditions in the rules except as
+    a constant
+    – The engine is not warned when a value
+    change of a global variable
+    93Example
+    global java.util.List myGlobalList;
+    rule 'Using a global'
+    when
+    eval( true )
+    then
+    myGlobalList.add( 'Hello World' );
+    end
+    -----
+    List list = new ArrayList();
+    WorkingMemory wm = rulebase.newStatefulSession();
+    wm.setGlobal( 'myGlobalList', list );
+    94Functions
+    functions allow to insert code in rule’s files.
+    –They are just like Helper classes.
+    With functions, the logic is centralized in one
+    place.
+    –They are used to invoke actions in the
+    consequence part of the rules.
+    95Example
+    function String hello(String name) {
+    return 'Hello '+name+'!';
+    }
+    rule 'using a static function'
+    when
+    eval( true )
+    then
+    System.out.println( hello( 'Bob' ) );
+    end
+    96Declarations
+    2 kinds of declarations :
+    –Declaration of new types : Drools works directly
+    with POJOs as facts. It is therefore possible to
+    define the business model directly in the rules or
+    to create model objects that are useful only in
+    reasoning.
+    Drools, at compile-time, generates the Java
+    bytecode that implements the new type
+    –Declaration of meta-data or annotations: The
+    facts or their attributes can be annotated.
+    Annotations can be used in reasoning or fact
+    finding.
+    97Declaration of new types
+    declare Address
+    number : int
+    streetName : String
+    city : String
+    end
+    declare Person
+    name : String
+    dateOfBirth : java.util.Date
+    address : Address
+    end
+    98Access to the declared types
+    We can access to the internal declaed types via the interface
+    org.drools.definition.type.FactType
+    // Get the data type
+    FactType personType = kbase.getFactType( 'org.drools.examples',
+    'Person' );
+    // Instanciate it
+    Object bob = personType.newInstance();
+    // Set attributes
+    personType.set( bob, 'name', 'Bob' );
+    personType.set( bob, 'age', 42 );
+    99Meta-data declaration
+    The character @ is used
+    The metadata can concern a new or existing type or one of its attributes.
+    declare Person
+    @author( Bob )
+    @dateOfCreation( 01-Feb-2009 )
+    name : String @key @maxLength( 30 )
+    dateOfBirth : Date
+    address : Address
+    end
+    On a existing type
+    declare Person
+    @author( Bob )
+    @dateOfCreation( 01-Feb-2009 )
+    end
+    100Use of meta-data
+    Drools allows the declaration of arbitrary
+    meta-data.
+    Metadata can be used by queries.
+    Some meta-data are predefined and
+    have a meaning for the engine. They
+    are especially useful for Drools-CEP:
+    @role, @timestamp, @duration, ...
+    101Example
+    StatefulKnowledgeSession ksession= createKSession();
+    ksession.fireAllRules(new AgendaFilter() {
+    public boolean accept(Activation activation) {
+    Map<String, Object> metaData =
+    activation.getRule().getMetaData();
+    if (metaData.containsKey('LegalRequirement')) {
+    System.out.println(metaData.get('LegalRequirement'));
+    }
+    return true;
+    }
+    });
+    102Rules and attributes
+    103Rule
+    104Rule, syntax
+    A rule must have a unique name inside the
+    package.
+    ✔
+    ✔
+    ✔
+    ✔
+    The name can contain spaces if it is
+    delimited by '.
+    The left side of the rule (Left Hand Side) or
+    condition follows the keyword when
+    The Right Hand Side or Consequence follows
+    the keyword then
+    ✔The rule ends with the keyword end.
+    ✔Rules can not be nested.
+    105Attributes
+    no-loop (boolean, false): When the consequence of
+    the rule changes a fact, it can cause the rule to be
+    activated again. Recursion can be avoided with the
+    no-loop attribute set to true.
+    salience (Integer, 0): Each rule has an integer
+    salience attribute that determines the priority of the
+    rule in the agenda.
+    dialect: (String, 'java' or 'mvel') The dialect is
+    usually specified at the package level. This attribute
+    overrides the package-level definition.
+    106Attributes (2)
+    agenda-group (String, MAIN): This attribute allows you
+    to partition the Agenda and control the execution. Only
+    the rules of the agenda group that has the focus are
+    allowed to fire.
+    activation-group (String): Rules belonging to the same
+    activation group are exclusive. The first rule that fires
+    cancels the others.
+    ruleflow-group (String): Group several rules. The rules in
+    this group will only be enabled when the process is in a
+    particular node of an associated jBPM process.
+    107Attributes (3)
+    auto-focus (boolean, false): When a rule is enabled with the auto-
+    focus attribute set, the group indicated by one of its attributes
+    (agenda-group or activation-group) gains the focus.
+    lock-on-active (boolean, false): When a group (ruleflow or agenda)
+    becomes active, all the rules in this group that have the lock-on-active
+    attribute set will no longer be activated in the future whatever the
+    origin of the update. They can be reactivated when their group is
+    reactivated.
+    effective-date (String defining a date): A rule can only be activated
+    if the current date is greater than the effective date.
+    date-expires (String defining a date): A rule can only be activated if
+    the current date is greater than the expiration date.
+    108Timer
+    Drools supports timers based on intervals or expressed by cron expressions.
+    timer ( int: <initial delay> <repeat interval>? )
+    timer ( cron: <cron expression> )
+    Example
+    rule 'Send SMS every 15 minutes'
+    timer (cron:* 0/15 * * * ?)
+    when
+    $a : Alarm( on == true )
+    then
+    channels[ 'sms' ].insert( new Sms( $a.mobileNumber, 'The alarm is still on' );
+    end
+    109fireUntilHalt()
+    In order for rules using timers to be triggered, the
+    engine must be active.
+    In this case, do not call fireAllRules() but
+    fireUntilHalt() which evaluates the rules until it
+    receives a halt signal
+    In this case, stop the engine can be done:
+    – Via a rule: drools.halt ()
+    – Via Java: ksession.halt ()
+    In this case, the fireUntilHalt method is usually started
+    in an independent thread so that the Java code can
+    stop it.
+    110LHS
+    111LHS
+    The LHS part is the conditional part of the rule.
+    It consists of zero or more conditions elements
+    –If no condition element, the LHS is set to true and
+    will be activated when the working memory is
+    created
+    –Conditional elements consist of patterns that are
+    implicitly connected by and
+    112Pattern
+    A pattern consists of:
+    ●
+    ●
+    ●
+    A binding pattern to create a variable used in the
+    rule (the $ character is optional but
+    recommended)
+    A restriction on the type (A fact, an interface, an
+    abstract class)
+    A set of constraints linked by operators
+    Ex: $ c: Cheese ()
+    113Constraint’s syntax
+    2 types of syntax are available:
+    – Field’s constraints
+    • Concern only one attribute
+    • Combined with && , || and ()
+    – Group ‘s constraints
+    • Concern several attributes of the same fact
+    • Combined with ',' (which means && with a
+    lower precedence)
+    114Field’s constraints
+    A field constraint expresses a restriction on a property of the object
+    accessible by getter / setter, it is possible to bind the field on a
+    variable
+    3 types of restriction are possible:
+    ●Unique value: the field is compared to a single value
+    ●Multiple values: the field is compared to several values
+    ●Multi-constraints: Several constraints are specified on the field
+    The value of the field can be String, numeric, date (format 'dd-mmm-
+    yyyy' by default), boolean or Enum tests on null can be carried out as
+    well as on returns of method
+    115Single value constraint
+    The operators that can be used are: <, <=, >, >=, ==, !=,
+    contains, not contains, memberof, not memberof,
+    matches (expr. régulière), not matches
+    Cheese( quantity == 5 )
+    Cheese( bestBefore < '27-Oct-2009' )
+    Cheese( type == 'camembert' )
+    Cheese( from == Enum.COW)
+    Cheese( type matches '(Buffalo)?\S*Mozarella' )
+    CheeseCounter( cheeses contains 'stilton' )
+    CheeseCounter( cheese memberOf $matureCheeses )
+    Person( likes : favouriteCheese ) Cheese( type == likes )
+    Person( girlAge : age, sex == 'F' ) Person( age == ( girlAge + 2), sex ==
+    'M' )
+    116Multiple values constraint
+    Operators in and not in, allow to specify
+    multiple values separated by ','
+    Person( $cheese : favouriteCheese )
+    Cheese( type in ( 'stilton', 'cheddar', $cheese ))
+    117Multiples constraints
+    Multiple constraints allow you to specify several
+    restrictions on the field related by the operators '&&'
+    or '||' and parentheses
+    Person( age > 30 && < 40 )
+    Person( age ( (> 30 && < 40) ||
+    (> 20 && < 25) ) )
+    Person( age > 30 && < 40 || location == 'london' )
+    118Group’s constraint
+    The comma, allows to separate the
+    constraints of groups and is equivalent
+    to a less priority AND:
+    Person( age > 50, weight > 80, height > 2 )
+    The comma operator can not be nested
+    in a composite expression:
+    Person( ( age > 50, weight > 80 ) || height > 2 )
+    // => compilation ERROR
+    119Other operators
+    not: There is no fact in the working memory corresponding
+    to these restrictions
+    exists: There is at least one fact in the working memory
+    corresponding to these restrictions
+    forall: All the facts of the working memory corresponding
+    to the first restriction satisfy the other restrictions
+    from: Used to compare data other than the entire working
+    memory (For example a query, a channel)
+    collect: Lets reason on a collection of objects
+    accumulate: Allows you to perform an aggregate function
+    on a collection of objects
+    120Examples
+    #There is no red bus in the memory
+    not Bus(color == 'red')
+    #There is at least one bus 42 of red color in the memory
+    exists ( Bus(color == 'red', number == 42) )
+    #All English buses are red
+    forall( $bus : Bus( type == 'english')
+    'red' ) )
+    Bus( this == $bus, color =
+    # Addresses with the correct postal code
+    # who are detained by Person from memory
+    Person( $personAddress : address )
+    Address( zipcode == '23920W') from $personAddress
+    121Examples
+    # Build a mom list
+    # All females with children
+    $mothers : LinkedList()
+    from collect( Person( gender == 'F', children > 0 ) )
+    # All orders with total greater than 100
+    $order : Order()
+    $total : Number( doubleValue > 100 )
+    from accumulate( OrderItem( order == $order, $value : value ),
+    sum( $value ) )
+    122Query definition
+    A query can search for facts in the knowledge base
+    A request can be parameterized.
+    The names of the queries are global to the knowledge base
+    => No identical name even in different packages
+    Its definition is identical to the left part of a rule:
+    query 'people over the age of x'
+    (int x)
+    person : Person( age > x )
+    end
+    123Use
+    The result of a query is obtained by :
+    ksession.getQueryResults('name')
+    It is then possible to iterate on the returned lines
+    QueryResults results = ksession.getQueryResults( 'people over the age of x' ,30 );
+    System.out.println( 'we have ' + results.size() + ' people over the age
+    of 30' );
+    System.out.println( 'These people are are over 30:' );
+    for ( QueryResultsRow row : results ) {
+    Person person = ( Person ) row.get( 'person' );
+    System.out.println( person.getName() + '\n' );
+    }
+    124RHS
+    125RHS
+    The right part contains a list of actions to
+    perform.
+    In general, no conditional code because the
+    rule must be 'atomic' (if not separate into
+    several rules)
+    The operations can act on the working memory
+    and thus trigger the inference:
+    ●Adding facts
+    ●Deleting facts
+    ●Update facts
+    126Macro-methods
+    Drools proposes several macro-methods avoiding to recover the
+    references of the facts which one wishes to update:
+    ●
+    ●
+    ●
+    ●
+    ●
+    ●
+    update (object, handle): Notifies the engine that an
+    object has been modified and rules must be
+    reconsidered
+    update (object): idem, but the equality test is used by
+    the engine.
+    insert (new Something ()): Inserts a new fact.
+    insertLogical (new Something ()): Same as insert but
+    the object is automatically removed from the working
+    memory if the rule is no longer valid.
+    retract (handle): Removes a fact from the working
+    memory
+    retract (object): idem with equality test
+    127modify
+    The modify statement can call multiple setters on a
+    model object
+    modify ( <fact-expression> ) {
+    <expression> [ , <expression> ]*
+    }
+    Exemple :
+    modify( $stilton ){
+    setPrice( 20 ),
+    setAge( 'overripe' )
+    }
+    128drools variable
+    The predefined variable drools of type KieHelper makes it
+    possible to call other useful methods:
+    –drools.getWorkingMemory () returns the
+    WorkingMemory or session object.
+    –drools.halt () stops execution of the rule
+    –drools.setFocus (String s) positions the focus on a group
+    in the calendar.
+    –drools.getRule (). getName () returns the name of the
+    rule
+    –drools.getTuple () returns the tuple of facts corresponding
+    to the execution of the rule
+    –drools.getActivation () returns the activation.
+    –insert (Object o), update (Object o), and retract
+    (Object o)
+    129kcontext et KieRuntime API
+    The entire Knowledge Base API is exposed through the kcontext
+    variable.
+    Its getKieRuntime () method returns an object of type KieRuntime that
+    proposes other useful methods for the RHS part:
+    –
+    getAgenda () returns a reference on the agenda of the
+    session
+    –
+    getQueryResults (String query) returns the result of a
+    query
+    –
+    addEventListener, removeEventListener: recording of
+    listeners for working memory or calendar.
+    –
+    getKnowledgeBase () returns the KnowledgeBase object.
+    –
+    Management of global variables with setGlobal (...),
+    getGlobal (...) and getGlobals ().
+    –
+    getEnvironment (): the runtime environment and its
+    properties
+    Lab2 : DRL
+    130Complex Event Processing
+    131Introduction
+    Complex event processing (CEP) allow to
+    make decisions based on time relationships
+    between facts.
+    The main focus of CEP is to correlate small units of
+    time-based data within an ever-changing, ever-
+    growing data cloud in order to react to hard-to-
+    find special situations
+    Reasonning is made on events which are facts
+    with a time of occurrence
+    132Complex event
+    A complex event is simply an
+    aggregation, composition, or
+    abstraction of other events
+    Rules will be expressed via complex
+    events using aggregation, composition
+    or abstraction
+    133Semantic of events
+    2 kinds of events are considered :
+    – Punctual event
+    – Interval event
+    All events are :
+    – Immutable
+    – A managed life cycle : when it is too old,
+    it is removed from the session
+    134Declaring time-based-events
+    In order to create the CEP rules, we must inform the
+    engine which types of objects must be treated as
+    events
+    It is done by adding meta-data :
+    – @Role : fact or event
+    – @Timestamp : The attribute which gives the time of
+    occurrence. If not present, the timestamp is the time of
+    insertion
+    – @Duration : The attribute which gives the duration of
+    the event. Optional
+    – @Expires : The attribute which gives the life time in the
+    session
+    135Sample
+    @org.kie.api.definition.type.Role(Role.Type.EVENT)
+    @org.kie.api.definition.type.Duration('durationAttr')
+    @org.kie.api.definition.type.Timestamp('executionTime')
+    @org.kie.api.definition.type.Expires('2h30m')
+    public class TransactionEvent implements Serializable {
+    private Date executionTime;
+    private Long durationAttr;
+    /* class content skipped */
+    }
+    136Sample (2)
+    declare PhoneCallEvent
+    @role(event)
+    @timestamp(whenDidWeReceiveTheCall)
+    @duration(howLongWasTheCall)
+    @expires(2h30m)
+    whenDidWeReceiveTheCall: Date
+    howLongWasTheCall: Long
+    callInfo: String
+    end
+    137Temporal operators
+    There are 13 temporal operators available which allow to
+    correlate events
+    For example :
+    declare MyEvent
+    @role(event)
+    @timestamp(executionTime)
+    End
+    rule 'my first time operators example'
+    when
+    $e1: MyEvent()
+    $e2: MyEvent(this after[5m] $e1)
+    Then
+    System.out.println('We have two events' + ' 5 minutes apart');
+    end
+    138139Another sample
+    rule 'More than 10 transactions in an hour from one client'
+    when
+    $t1: TransactionEvent($cId: customerId)
+    Number(intValue >= 10) from accumulate(
+    $t2: TransactionEvent(this != $t1,
+    customerId == $cId, this meets[1h] $t1),
+    count($t2) )
+    not (SuspiciousCustomerEvent(customerId == $cId,
+    reason == 'Many transactions'))
+    then
+    insert(new SuspiciousCustomerEvent($cId,
+    'Many transactions'));
+    end
+    140Event-driven architecture
+    The idea of event-driven architecture (EDA) is to
+    classify the components in the following four
+    different categories:
+    – Event Producer : Creators of events, for example a
+    sensor
+    – Event Consumer : Final output architecture which
+    point the produced value. For example a dashboard
+    – Event Channels : Communication protocols between
+    all the other components. For example JMS
+    – Event Processing Agents: Group the events to detect
+    and process complex events. The Drools rules
+    141Event-driven architecture
+    142Entry points
+    Entry points are a way to partition the
+    working memory
+    Rules can express conditions about events
+    from one particular source
+    Entry points are declared implicitly by
+    using them in rules
+    At insertion, the entry point can be
+    specified :
+    ksession.getEntryPoint('myEentryPoint').insert(new Object());
+    143Sample
+    // Insert event from one entry-pont to another
+    rule 'Routing transactions from small resellers'
+    when
+    $t: TransactionEvent() from
+    entry-point 'small resellers'
+    then
+    entryPoints['Stream Y'].insert(t);
+    end
+    144Sliding windows
+    Sliding windows allow to filter the events of
+    the working memory or any entry point
+    2 kinds of sliding windows :
+    – Length-based : Number of elements
+    – Time-based sliding : Elements that happened
+    within a specific time elapsed from now
+    Sliding windows can be defined
+    ●inside a rule
+    ●or outside for reuse
+    145Length-based sample
+    rule 'last 6 transactions are more than 100 dollars'
+    When
+    Number(doubleValue > 100.00) from accumulate(
+    TransactionEvent($amount: totalAmount)
+    over window:length(6),
+    sum($amount))
+    then
+    //... TBD
+    end
+    146Time-based sample
+    rule 'obtain last five hours of operations'
+    when
+    $n: Number() from accumulate(
+    TransactionEvent($a: totalAmount)
+    over window:time(5h),
+    sum($a)
+    )
+    Then
+    System.out.println('total = ' + $n);
+    end
+    147Declared sliding windows
+    sample
+    declare window Beats
+    @doc('last 10 seconds heart beats')
+    HeartBeat() over window:time( 10s )
+    from entry-point 'heart beat monitor'
+    end
+    rule 'beats in the window'
+    when
+    accumulate(HeartBeat() from window Beats,
+    $cnt : count(1))
+    then
+    // there has been $cnt beats over the last 10s
+    end
+    148Running CEP-scenarios
+    Both the Kie Base and Session that run
+    the CEP cases need special
+    management :
+    – Kie Base must be configured to support
+    CEP
+    – Define the way to fire rules : discrete or
+    continous
+    – The Kie Session internal clock used to
+    evaluate temporal events must be set
+    149KieBase
+    Kie Base must be configured to use the
+    STREAM event processing mode.
+    This configuration informs the runtime that it
+    should manage events and keep them
+    internally ordered by their timestamp
+    In kmodule.xml
+    <kbase name='cepKbase' eventProcessingMode='stream'
+    packages='chapter06.cep'>
+    <ksession name='cepKsession'/>
+    </kbase>
+    150Discrete vs Continous
+    Firing rules can be done :
+    – At specific point of time.
+    After inserting fact, we call fireAllRules
+    – Continously
+    fireUntilHalt
+    If we have a scenario where the absence of events
+    will trigger a rule, we have to use the continous
+    way
+    If the only thing that could trigger new rules is the
+    insertion of new events then discrete rule firing will
+    be enough
+    151Session clock
+    By default, Kie Sessions will use the
+    clock of the machine on which is
+    running
+    For testing scenarios, we can use pseu-
+    clock
+    For complex distributed scenarios, we
+    can configured in synchronized clock
+    152Pseudo-clock sample
+    Configuration :
+    <kbase name='cepKbase' eventProcessingMode='stream'
+    packages='chapter06.cep'>
+    <ksession name='cepKsession' clockType='pseudo'/>
+    </kbase>
+    Usage in test case for example :
+    SessionPseudoClock clock = ksession.
+    getSessionClock();
+    clock.advanceTime(2, TimeUnit.HOURS);
+    clock.advanceTime(5, TimeUnit.MINUTES);
+    153DSL
+    154Introduction
+    Domain Specific Languages (DSL) allow to
+    extend the rules language by adapting it to the
+    business language.
+    This is an abstraction layer dedicated to non-
+    technical business experts that is translated into
+    the rule language at compile time
+    They can also be used as templates of conditions
+    or actions, allowing to share certain parts of
+    rules
+    155Syntax
+    The format of a DSL is simply a text file that translates
+    'natural' language keys into drl expressions
+    Each line starts with a scope and then the extended
+    language translation in the rule language
+    [when]This is
+    '{something}'=Something(something=='{something})'
+    [then]Log
+    '{message}'=System.out.println('{message}') ;
+    156Syntax
+    It is also possible to use the scope [keyword] which
+    makes it possible to redefine a keyword:
+    [keyword] quand = when
+    The defined sentences are actually regular
+    expressions. Wildcards can therefore be used.
+    157Examples
+    [when]There is a Person with name of
+    '{name}'=Person(name=='{name}')
+    [when]Person is at least {age} years old and lives in
+    '{location}'=Person(age > {age}, location=='{location}')
+    [then]Log '{message}'=System.out.println('{message}');
+    There is a Person with name of 'kitty'
+    ---> Person(name='kitty')
+    Person is at least 42 years old and lives in 'atlanta'
+    ---> Person(age > 42, location='atlanta')
+    Log 'boo'
+    ---> System.out.println('boo');
+    158Example with regexp
+    [when][]is less than or equal to=<=
+    [when][]is less than=<
+    [when][]is greater than or equal to=>=
+    [when][]is greater than=>
+    [when][]is equal to===
+    [when][]equals===
+    [when][]There is a Cheese with=Cheese()
+    [when][]- {field:\w*} {operator} {value:\d*}={field} {operator} {value}
+    ---------------------------------------------------------------------
+    There is a Cheese with
+    - age is less than 42
+    - rating is greater than 50
+    - type equals 'stilton'
+    ---------------------------------------------------------------------
+    Cheese(age<42, type=='stilton', rating>50)
+    159Steps
+    1. Name your DRL file with the .dslr extension
+    2. Refer to the DSL file in the rule file with the
+    keyword expander
+    expander your-expander.dsl
+    3. Put resources in the KieContainer's classpath:
+    Lab3 : DSL
+    160Decision tables
+    161Presentation
+    Decision tables are an efficient and compact way to
+    represent conditional logic, they are tailored to business
+    experts
+    The data entered in a spreadsheet makes it possible to
+    generate the rules.
+    => the business expert then benefits from his favorite
+    tool: Excel
+    For each line of the decision table, the data is combined
+    with a template to generate a rule.
+    Decision tables allow you to encapsulate rules and isolate
+    the object model. Only the parameters of the rules that
+    can be modified are exposed.
+    162Example
+    163Template syntax
+    Decision tables have 2 types of columns:
+    ●
+    ●
+    Condition columns <=> LHS, the constraint syntax
+    must be used
+    Action columns <=> RHS, the code syntax must be
+    used
+    $ param is used to indicate where cell data will be inserted
+    ($ 1 can be used)
+    If the cell contains a value list separated by commas, the
+    symbols $ 1, $ 2, and so on. can be used.
+    The forall (DELIMITER) {SNIPPET} function can be used to
+    loop through all available values.
+    164Condition columns
+    The rendering of a condition depends on the presence of a
+    declaration of an object type in a line above.
+    If the type is specified, a type constraint is created.
+    If the cell contains just one attribute, the constraint will be an
+    equality constraint, otherwise the cell will include an operator.
+    165Consequences
+    The result of an action cell depends on the presence of an
+    entry on the line immediately above.
+    ●
+    ●
+    If there is nothing, the cell is interpreted as it is
+    If there is a variable, the contents of the cell are
+    added to the variable (Method Call)
+    166Keywords
+    Before the keyword RuleTable, the following keywords may
+    be present and condition their cell immediately to the
+    right:
+    –RuleSet : Specifying the name of the rule group, if
+    empty it is the default group
+    –Sequential : The cell on the right contains true or
+    false. If true, the salience property is used to
+    guarantee order
+    –Import : List of java classes to import
+    –Functions : Functions declaration
+    –Variables : Global variables declaration
+    –Queries : Queries declaration
+    167Example
+    168RuleTable
+    A cell with RuleTable indicates the
+    beginning of the definition of a rule
+    table.
+    The table starts with the next line. It is
+    read from left to right and from bottom
+    to top to a white line.
+    169Keywords in the rules table
+    CONDITION : Indicates a condition column
+    ACTION
+    : Indicates an action column
+    PRIORITY : Indicates a column used for the salience attribute
+    DURATION : Indicates the duration attribute of the rule
+    NAME : The name of the rule (optional)
+    NO-LOOP : Attribute no-loop (true or false)
+    ACTIVATION-GROUP : Attribute activation-group
+    AGENDA-GROUP
+    RULEFLOW-GROUP
+    : Attribute agenda-group of the rule
+    : Attribute ruleflow-group of the rule
+    170Integration
+    The integration of a decision table
+    requires the library
+    drools-decisiontables.jar
+    The main class SpreadsheetCompiler
+    takes as input a csv or excel file and
+    generates the rules in DRL
+    The rules can then be manipulated
+    independently
+    171Steps
+    1. The business expert starts from a decision table template
+    2. It informs the parameters of the rules and actions with
+    business descriptions
+    3. They enter the lines corresponding to the rules
+    4. The decision table is taken over by a technician who maps
+    the business language to scripts
+    5. The business expert and the technician review together the
+    changes made.
+    6. The business expert can edit the rules according to his
+    needs.
+    7. The technician can write test cases that check the rules
+    172Rules template
+    Rule templates use tabular data sources
+    (Spreadsheets, CSV, or others) to generate
+    many rules.
+    This is a technique that is ultimately more
+    powerful than the decision tables:
+    – Data can be stored in a database
+    – Rule generation can be conditioned by data
+    – The data can be used in any part of the rules
+    (operator, name of a class, name of a property)
+    – Several templates can be run on the same data
+    173Structure of a template
+    The text file
+    – starts with a template header header.
+    – Then the list of columns of tabular data
+    – A blank line to mark the end of the column definitions
+    – The standard DRL headers (package, import, global,
+    functions)
+    – The template keyword marks the beginning of a rule
+    template ; several templates can be defined in the same
+    file.
+    – The template uses the syntax @ {token_name} for
+    substitutions (ex: @ {row.rowNumber})
+    – The keyword end template marks the end of the template.
+    174Exemple
+    template header
+    age
+    type
+    Log
+    package org.drools.examples.templates;
+    global java.util.List list;
+    template 'cheesefans'
+    rule 'Cheese fans_@{row.rowNumber}'
+    when
+    Person(age == @{age})
+    Cheese(type == '@{type}')
+    then
+    list.add('@{log}');
+    end
+    end template
+    175kmodule
+    The template must then be included with the
+    associated data file in the kmodule definition
+    <?xml version='1.0' encoding='UTF-8'?>
+    <kmodule xmlns='http://drools.org/xsd/kmodule'>
+    <kbase name='TemplatesKB' packages='org.drools.examples.templates'>
+    <ruleTemplate
+    dtable='org/drools/examples/templates/ExampleCheese.xls'
+    template='org/drools/examples/templates/Cheese.drt'
+    row='2' col='2'/>
+    <ksession name='TemplatesKS'/>
+    </kbase>
+    </kmodule>
+    176Sample with database
+    // Get results from your DB query...
+    resultSet = preparedStmt.executeQuery();
+    // Generate the DRL...
+    resultSetGenerator = new ResultSetGenerator();
+    String drl = resultSetGenerator.compile(resultSet,
+    new
+    FileInputStream('path/to/template.drt'));
+    Lab4 : Decision tables and templates
+    177Drools and jBPM
+    212Introduction
+    Drools and jBPM complement each other,
+    allowing end users to describe business
+    knowledge using different paradigms : Rules
+    and processes
+    They shared :
+    – The same API
+    – The same integration patterns with a business
+    application
+    – The same mechanisms for building and
+    deploying
+    213Accessing processes from
+    rules
+    In the action side, a rule has access to
+    kcontext and kcontext.getKieRuntime()
+    With this object reference, it is possible
+    to :
+    – create, abort, and signal processes
+    – Access the WorkItemManager to
+    complete WorkItems
+    214Sample
+    rule 'Validate OrderLine Item's cost'
+    when
+    $ol: OrderLine()
+    then
+    Map<String, Object> params = new HashMap<String, Oject>();
+    params.put('requested_amount', $ol.getItem().getCost());
+    kcontext.getKieRuntime().startProcess('simple', params);
+    end
+    215Process instances as facts
+    Insertion of Process Instances as facts in the
+    Rule Engine allow to write rules about our
+    processes or groups of processes
+    The listener RuleAwareProcessEventLister,
+    provided by jBPM, automatically insert our
+    ProcessInstances and update them
+    whenever a variable is changed
+    The processes need to include Async activities
+    216Sample
+    rule 'Too many orders for just our Managers'
+    when
+    List($managersCount:size > 0) from collect(Manager())
+    List(size > ($managersCount * 3)) from
+    collect(WorkflowProcessInstance(processId == 'process-
+    order'))
+    then
+    //There are more than 3 Process Order Flows per manager.
+    // Please hire more people :)
+    end
+    217BPMN2 Business Rule Tasks
+    BPMN2 specification proposes a specific
+    type of task called a Business Rule
+    Task.
+    It is used in conjunction with the Rule
+    Property called ruleflow-group .
+    This property allows to specify which rules
+    can be fired when the Business Rule Task
+    is executed as part of a process instance
+    218Sample
+    Lab4 : Business Rule Task
+    219Thank U!!!
+    THANK YOU FOR YOUR ATTENTION
+    279Annexes
+    280Syntaxe
+    281Élément conditionnel and
+    Les éléments conditionnels peuvent être combinés avec les
+    opérateurs and (opérateur implicite)
+    L'opérateur and peut-être utilisé en préfixe ou en infixe
+    Implicite
+    Cheese( cheeseType : type )
+    Person( favouriteCheese == cheeseType)
+    Préfixe
+    (and Cheese( cheeseType : type )
+    Person( favouriteCheese == cheeseType ) )
+    Infixe
+    (Cheese( cheeseType : type ) and
+    Person( favouriteCheese == cheeseType ) )
+    282Élément conditionnel or
+    L'élément conditionnel or a pour effet de
+    créer plusieurs sous-règles distinctes
+    qui deviennent complètement
+    indépendantes. Il peut s'employer en
+    préfixe ou en infixe.
+    (or Person( sex == 'f', age > 60 )
+    Person( sex == 'm', age > 65 )
+    283Construction programmatique
+    284Alternative programmatique
+    Il est possible de définir les bases de
+    connaissance et les sessions
+    programmatiquement (comme avec
+    Drools 5)
+    Il est alors nécessaire de créer un
+    KieFileSystem et d'y ajouter les
+    ressources
+    285Exemple
+    KieServices kieServices = KieServices.Factory.get();
+    KieModuleModel kieModuleModel = kieServices.newKieModuleModel();
+    KieBaseModel kieBaseModel1 = kieModuleModel.newKieBaseModel( 'KBase1 ')
+    .setDefault( true )
+    .setEqualsBehavior( EqualityBehaviorOption.EQUALITY )
+    .setEventProcessingMode( EventProcessingOption.STREAM );
+    KieSessionModel ksessionModel1 = kieBaseModel1.newKieSessionModel( 'KSession1' )
+    .setDefault( true )
+    .setType( KieSessionModel.KieSessionType.STATEFUL )
+    .setClockType( ClockTypeOption.get('realtime') );
+    KieFileSystem kfs = kieServices.newKieFileSystem();
+    ….
+    kfs.write('src/main/resources/KBase1/ruleSet1.drl', stringContainingAValidDRL )
+    .write( 'src/main/resources/dtable.xls',
+    kieServices.getResources().newInputStreamResource( dtableFileStream ) );
+    286Phase de build
+    KieServices kieServices = KieServices.Factory.get();
+    KieFileSystem kfs = ...
+    kieServices.newKieBuilder( kfs ).buildAll();
+    // Vérification qu'il n'y a pas d'erreur
+    assertEquals( 0,
+    kieBuilder.getResults().getMessages( Message.Level.ERROR ).size() );
+    // Récupération du conteneur
+    KieContainer kieContainer =
+    kieServices.newKieContainer(kieServices.getRepository().getDefaultRepos
+    itory()) ;
+    287Drools 5 versus Drools 6
+    288Drools 6 vs Drools 5
+    289Drools 6 vs Drools 5
+    290Drools 6 vs Drools 5
+    291Drools 6, ce qui a changé
+    KnowledgeBase -> KieBase
+    StatefulKnowledgeSession -> KieSession
+    KnowledgeAgent -> KieScanner
+    kjar : Un jar qui contient:
+    resources (drl, dsl, csv, ...), Java classes
+    kmodule.xml
+    pom.xml (maven)
+    KieContainer kContainer = ks.newKieContainer(
+    ks.newReleaseId('org.mygroup', 'myartifact', '1.0'));
+    Knowledge API replaced by KIE API
+    Integration with CDI
+    292Kie Serveur
+    293Introduction
+    Le KIE serveur est une application stand-
+    alone permettant d’exécuter des règles
+    ou démarrer des processus
+    Ces fonctionnalités sont accessibles via
+    REST, JMS ou l’API Java
+    Il propose également une intégration
+    avec le Weorkbench
+    Il est packagé sous forme de war
+    294Configuration
+    Le serveur est configurable via des
+    propriétés système
+    Par exemple :
+    -Dorg.jbpm.server.ext.disabled=true
+    295TP
+    Installation
+    Chargement des règles dans Guvnor
+    Création de snapshot
+    296Drools Fusion
+    Problématique du CEP
+    Fonctionnalités Drools Fusion
+    297Complex Event Processing
+    Le traitement d'évènements , Complex
+    event processing (CEP) consiste à
+    traiter de nombreux évènements
+    survenant à différents niveaux
+    d'organisation afin d'identifier les plus
+    significatifs, analyser leurs impacts et
+    prendre les actions en conséquence.
+    Tout cela en temps-réel.
+    Wikipedia
+    298Caractéristiques
+    • En général, il faut traiter de nombreux événements mais
+    seulement un petit pourcentage a un réel intérêt.
+    • Les événements sont généralement immuables, (on ne
+    peut pas changer le passé ! ).
+    • Les règles et les requêtes travaillent sur des pattern
+    d’événements
+    • Il y a de fortes relations temporelles entre les événements
+    . Les événements pris isolément n'ont en général peu
+    d'importance. Le système doit détecter des patterns
+    d’événements reliés
+    • Le système doit composer et agréger les événements
+    299Objectifs de Drool Fusion
+    Drools Fusion s'adresse plusieurs objectifs :
+    • Permettre la détection, corrélation, agrégation et composition
+    d’événements
+    • Support pour le traitement de flux d’événements
+    • Support de contraintes temporelles pour modéliser les relations
+    temporelles entre les événements
+    • Support des fenêtres glissantes
+    • Support d'une horloge unifiée à l'intérieur d'une session.
+    • Support d'un important volume d’événements relatif aux cas
+    d'utilisation du CEP.
+    • Support de règles réactives, inférence.
+    • Support de différents adaptateurs pour l'insertion des événements
+    dans le moteur.
+    300Typologie des événements
+    Les événements pour Drools et sa base de connaissance sont des
+    faits particuliers :
+    –Immuable (même si ces attributs peuvent être enrichis)
+    –Ayant des contraintes temporelles
+    –Ayant un cycle de vie géré : A cause des contraintes temporelles, le
+    moteur peut déduire qu'un événement ne pourra plus correspondre
+    à d'autre faits et donc de le retirer de la base de connaissance
+    –Fenêtre de temps : Tout événement est attaché à un timestamp, il
+    est donc possible de spécifier des règles d’agrégation sur une
+    période
+    Drools distingue 2 types d’événements : ponctuel (point-in-time), à
+    durée (interval-based)
+    301Déclaration d’événement
+    Pour déclarer un fait comme un événement, il suffit de
+    l'annoter avec @role(event)
+    import some.package.StockTick
+    declare StockTick
+    @role( event )
+    end
+    Ou
+    declare StockTick
+    @role( event )
+    datetime : java.util.Date
+    symbol : String
+    price : double
+    end
+    302Autres annotations
+    Dés sa déclaration, un événement a un
+    ensemble de méta-données avec des
+    valeurs par défaut, elles peuvent être
+    surchargées par les annotations :
+    @timestamp(attributeName) : L'attribut
+    à utiliser pour déterminer le timestamp
+    @duration(attributeName) : la durée
+    @expires(attributeName) : Expiration de
+    l’événement
+    303Horloge de la session
+    Le traitement des événements nécessite une horloge
+    de référence.
+    Drools implémente le pattern « strategy » afin de
+    pouvoir plugger différents types d'horloges adaptées
+    à différents environnements :
+    
+    Environnement de test ou de simulation le temps doit
+    être contrôlé
+    Environnement de production, horloge classique
+    Environnement JEE : L'horloge du serveur
+    Environnement cluster : Horloges synchronisées
+    304Implémentation
+    Drools fournit 2 implémentations d'horloges :
+    Horloge temps-réel utilisant l'horloge système
+    KnowledgeSessionConfiguration config =
+    KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+    config.setOption( ClockTypeOption.get('realtime') ) ;
+    Une pseudo-horloge qui est avancée par
+    l'application et qui est très utile pour les tests
+    305Pseudo-Horloge
+    Configuration
+    KnowledgeSessionConfiguration config =
+    KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+    config.setOption( ClockTypeOption.get('pseudo') );
+    Utilisation
+    SessionPseudoClock clock = session.getSessionClock();
+    // then, while inserting facts, advance the clock as necessary:
+    FactHandle handle1 = session.insert( tick1 );
+    clock.advanceTime( 10, TimeUnit.SECONDS );
+    FactHandle handle2 = session.insert( tick2 );
+    clock.advanceTime( 30, TimeUnit.SECONDS );
+    306Points d'entrée
+    Pour supporter différents flux d’événements, Drools Fusion
+    introduit la notion de point d'entrée.
+    Les événements proviennent d'un point d'entrée et la mémoire
+    de travail est donc partitionnée selon les différentes
+    provenances des faits.
+    Les points d'entrée peuvent alors être spécifiés dans les règles.
+    rule 'authorize withdraw'
+    when
+    WithdrawRequest( $ai : accountId, $am : amount ) from entry-point 'ATM
+    Stream'
+    CheckingAccount( accountId == $ai, balance > $am )
+    then
+    // authorize withdraw
+    end
+    307Opérateurs temporels
+    Drools Fusion ajoute 13 opérateurs
+    temporels permettant de corréler des
+    événements :
+    after, before, coincides, during, finishes,
+    finished by, includes, meets, met by,
+    overlaps, overlapped by, starts, started
+    by
+    308Exemples
+    $eventA : EventA( this after[ 3m30s, 4m ] $eventB )
+    L'évènement A démarre entre 3 minutes 30s et 4 minutes après la fin de l'évènement B
+    $eventA : EventA( this coincides $eventB )
+    Les évènements A et B ont la même date de démarrage et de fin
+    $eventA : EventA( this during $eventB )
+    L'évènement A démarre après B et se termine avant B
+    $eventA : EventA( this includes $eventB )
+    A démarre avant B et se termine après
+    $eventA : EventA( this finishes $eventB )
+    A démarre après B et se termine en même temps que B
+    $eventA : EventA( this finishedby $eventB )
+    A démarre avant B et se termine en même temps que B
+    309Exemples
+    $eventA : EventA( this meets $eventB )
+    A se termine lorsque B démarre
+    $eventA : EventA( this metby $eventB )
+    A démarre lorsque B se termine
+    $eventA : EventA( this overlaps $eventB )
+    A démarre avant B et se termine avant B
+    $eventA : EventA( this overlappedby $eventB )
+    B démarre avant A et se termine avant A
+    $eventA : EventA( this starts $eventB )
+    A démarre en même temps que B et se termine avant
+    $eventA : EventA( this startedby $eventB )
+    A démarre en même temps que B et se termine après
+    310Mode stream
+    Par défaut, le moteur de règles travaille en mode CLOUD, c'est à dire que tous les faits
+    de la mémoire de travail sont pris en compte de suite, il n'y a pas de notion de
+    temps.
+    Pour traiter des flux d’événements, il faut changer le mode en STREAM. Dés lors, le
+    moteur est capable de gérer :
+    Des fenêtres de temps
+    Le cycle de vie des événements (expiration)
+    Des délais d'exécution dans les règles
+    KnowledgeBaseConfiguration config = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
+    config.setOption( EventProcessingOption.STREAM ) ;
+    Dans ce cas :
+    Les évènements de chaque flux doivent être ordonnés.
+    Les différents streams doivent également être synchronisés
+    311Exemple : délai d'activation
+    rule 'Sound the alarm'
+    when
+    $f : FireDetected( )
+    not( SprinklerActivated( this after[0s,10s] $f ) )
+    then
+    // sound the alarm
+    end
+    312Fenêtres glissantes
+    Les fenêtres glissantes permettent de grouper des
+    événements dans une fenêtre temporelle
+    glissante.
+    Les fenêtres peuvent être exprimées via :
+    Un temps : Prise en compte des événements
+    survenus lors des x dernières unités de temps
+    StockTick() over window:time( 2m )
+    Une longueur : Prise en compte des x derniers
+    événements
+    StockTick( company == 'IBM' ) over
+    window:length( 10 )
+    313Exemple d'agrégation
+    rule 'Sound the alarm in case temperature rises above
+    threshold'
+    when
+    TemperatureThreshold( $max : max )
+    Number( doubleValue > $max ) from accumulate(
+    SensorReading( $temp : temperature ) over window:time( 10m ),
+    average( $temp ) )
+    then
+    // sound the alarm
+    end
+    314Cycle de vie des événements
+    L'exécution en mode STREAM permet au
+    moteur de détecter les événements qui ne
+    peuvent plus matcher aucune règle et donc
+    de les supprimer de la mémoire de travail
+    L'identification des événements à supprimer se
+    fait :
+    En se basant sur leur attribut d'expiration
+    En analysant les contraintes temporelles des
+    règles
+    315"
+
+}

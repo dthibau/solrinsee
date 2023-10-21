@@ -1,0 +1,139 @@
+{
+    "id": 109,
+    "titre": "Jenkins",
+    "sujet" : "Intégration continue avec le serveur Jenkins",
+    "auteur": [
+        "M. Jean Pierre",
+        "S. Eyinga"
+    ],
+    "date": "2015-02-01T00:00:00Z",
+    "mots-clefs" : [
+        "DevOps",
+        "CI"
+    ], 
+    "content_type": "application/odp",
+    "nb_pages": 15,
+    "language": "fr",
+    "content" : "Intégration continue avec le serveur
+    Jenkins
+    David THIBAU – 2015
+    david.thibau@gmail.com
+    PLB - Consultant
+    Page 1Jenkins PHP
+    http://jenkins-php.org/
+    PLB - Consultant
+    Page 2Etapes
+    1. Installer les plugins nécessaires pour
+    PHP
+    2. Orchestrer les outils PHP avec Apache
+    Ant
+    3. Configurer les outils PHP pour leur
+    utilisation avec les jobs Jenkins
+    4. Installer un gabarit de jobs PHP
+    5. Créer un job Jenkins à partir du gabarit
+    PLB - Consultant
+    Page 3Outils PHP
+    PHPUnit : Tests
+    PHP_CodeSniffer : Qualité de code
+    PHPLOC : Métriques
+    PHP_Depend : Dépendances et métriques
+    PHPMD : Métriques
+    PHPCPD : Détecteur de Copy&Paste
+    phpDox : Générateur de documentation
+    PLB - Consultant
+    Page 4Plugins PHP
+    Checkstyle : Traitement des fichiers de PHP_CodeSniffer au format
+    Checkstyle
+    Clover PHP : Traitement des fichiers XML de PHPUnit's Clover
+    Crap4J : Traitement des fichiers XML de PHPUnit's Crap4J
+    DRY : Traitement des fichiers de phpcpd au format PMD-CPD
+    HTML Publisher : utile pour la documentation générée par phpDox
+    JDepend : pour traiter les fichiers de PHP_Depend au format JDepend
+    Plot : pour traiter les sorties CSV de phploc
+    PMD : pour traiter les fichiers PHPMD au format PMD
+    Violations : pour les différentes traces relatives à la qualité de code
+    Warnings : pour traiter les warnings du compilateur PHP compiler
+    xUnit : pour le traitement des fichier XML de PHPUnit
+    PLB - Consultant
+    Page 5Exemple target ant
+    <target name='pdepend'
+    unless='pdepend.done'
+    depends='prepare'
+    description='Calculate software metrics using PHP_Depend and log result
+    in XML format. Intended for usage within a continuous integration environment.'>
+    <exec executable='${toolsdir}pdepend' taskname='pdepend'>
+    <arg value='--jdepend-xml=${basedir}/build/logs/jdepend.xml' />
+    <arg value='--jdepend-chart=${basedir}/build/pdepend/dependencies.svg' />
+    <arg value='--overview-pyramid=${basedir}/build/pdepend/overview-
+    pyramid.svg' />
+    <arg path='${basedir}/src' />
+    </exec>
+    <property name='pdepend.done' value='true'/>
+    </target>
+    PLB - Consultant
+    Page 6Démarrage des targets
+    <target name='build-parallel'
+    depends='prepare,lint,tools-parallel,phpunit,phpdox'
+    description=''/>
+    <target name='tools-parallel' description='Run tools in parallel'>
+    <parallel threadCount='2'>
+    <sequential>
+    <antcall target='pdepend'/>
+    <antcall target='phpmd-ci'/>
+    </sequential>
+    <antcall target='phpcpd-ci'/>
+    <antcall target='phpcs-ci'/>
+    <antcall target='phploc-ci'/>
+    </parallel>
+    </target>
+    PLB - Consultant
+    Page 7Exemple configuration
+    phpUnit
+    <target name='build-parallel'
+    depends='prepare,lint,tools-parallel,phpunit,phpdox'
+    description=''/>
+    <target name='tools-parallel' description='Run tools in parallel'>
+    <parallel threadCount='2'>
+    <sequential>
+    <antcall target='pdepend'/>
+    <antcall target='phpmd-ci'/>
+    </sequential>
+    <antcall target='phpcpd-ci'/>
+    <antcall target='phpcs-ci'/>
+    <antcall target='phploc-ci'/>
+    </parallel>
+    </target>
+    PLB - Consultant
+    Page 8Artefacts produits et traités
+    par Jenkins
+    build
+    |-- api ...
+    |-- coverage ...
+    `-- logs
+    |-- checkstyle.xml
+    |-- clover.xml
+    |-- crap4j.xml
+    |-- jdepend.xml
+    |-- junit.xml
+    |-- phploc.csv
+    |-- pmd-cpd.xml
+    `-- pmd.xml
+    PLB - Consultant
+    Page 9Installation du gabarit de job
+    cd $JENKINS_HOME/jobs
+    mkdir php-template
+    cd php-template
+    wget https://raw.github.com/sebastianbergmann/php-
+    jenkins-template/master/config.xml
+    cd ..
+    chown -R jenkins:jenkins php-template/
+    PLB - Consultant
+    Page 10Création de projet
+    Sélectionner 'Copy existing job' et saisir
+    le job gabarit dans le champ 'Copy
+    from'
+    Configurer le SCM ...
+    PLB - Consultant
+    Page 11"
+
+}

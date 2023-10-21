@@ -1,0 +1,441 @@
+{
+    "id": 102,
+    "titre": "Design Pattern Principles",
+    "sujet" : "Cahier de TP « Design Principles »",
+    "auteur": [
+        "David THIBAU"
+    ],
+    "date": "2016-04-01T00:00:00Z",
+    "mots-clefs" : [
+        "Développement"
+    ], 
+    "content_type": "application/odt",
+    "nb_pages": 12,
+    "language": "fr",
+    "content" : "Cahier de TP « Design Principles »
+
+    Outils utilisé lors de  : 
+        • Bonne connexion Internet 
+        • Système d'exploitation recommandé : Linux ou Windows 10
+        • Système de virtualisation : VirtualBox
+        • Docker JDK8 et Git
+    TP1 : Design Patterns
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+    
+    Dans un premier temps, il est demandé aux stagiaires d'identifier les patterns décrits par les 3 problème suivants.
+    
+    Ensuite, compléter le code fourni  
+    
+    Description de 3 problèmes :
+    Problème n°1 : 
+    Gérer la réutilisation d'objets lorsqu'un type d'objet est coûteux à instancier ou lorsque le nombre d'instance est limité
+    
+    Problème n°2 : 
+    Permettre à une implémentation existante d'être accessible via un interface sans que cette implémentation implémente l'interface 
+    
+    Problème n°3 :   
+    Permettre à un objet d'envoyer une commande sans connaître quels objets la recevront. Chaque objet dans la chaîne traite la commande et la passe au suivant
+    
+    Optionnel
+    Problème n° 4 :
+    Minimiser l’usage mémoire en partageant des objets représentatif de données utilisés à de nombreux endroits.
+    
+    TP2 : AOP avec AspectJ
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+          
+    Nous utilisons le framework SpringBoot et AspectJ pour illustrer l’AOP.
+    Reprendre les sources fournis (projet Maven)
+    Un exemple complet d’implémentation d’un aspect via une annotation est fourni avec les classes org.formation.aspectj.Secured et org.formation.aspectj.SecuredAspect 
+    Comprendre l’exemple et s’en inspirer pour implémenter un aspect qui lorsqu’il sera appliqué affichera le temps d’exécution d’une méthode.
+    Exécuter le test fourni pour visualiser les effets des annotations 
+    TP3 : Programmation réactive
+    Pré-requis : 
+        • Navigateur Chrome ou Firefox
+          
+    Aller sur stackblitz.com et créer un projet RxJS/TypeScript. 
+    Visualiser le projet exemple
+    Reprendre les sources fournis et les comprendre
+    Modifier le fichier index.html en ajoutant un champ de saisie.
+    Créer un observable sur l’événement keypress.
+    Sur chaque caractère saisi :
+        • Filtrer afin que d’accepter les lettres de l’alphabet
+        • Passer en Majuscule
+        • Ignorer la saisie de 2 lettres identiques à la suite
+        • Afficher la chaîne complète saisie
+    
+    TP4 : Programmation cliente
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+    
+    Récupérer les jars fournis et les exécuter :
+        • java -jar annuaire.jar
+        • java -jar notifications-service.jar
+        • java -jar fakeSMTP2.0.jar
+    
+    Les programmes démarrent respectivement un service d’annuaire Eureka écoutant sur le port 1111, un service applicatif de notification qui s’enregistre dans l’annuaire et qui communique avec un faux serveur de mail sur le port 2525
+    
+    Cela nécessite que les adresses IP annuaire et fake-smtp soit résolues en localhost
+    
+    Récupérer les sources fournis dans votre IDE. L’objectif est de compléter la méthode test en :
+        • Effectuant un lookup vers l’annuaire pour localiser le service de notification (Utiliser l’objet discoveryClient) 
+        • Effectuer un appel rest en utilisant l’objet RestTemplate fournit par Spring 
+    Démarrer un 2ème service de notification sur un autre port de la façon suivante :
+        • java -jar notifications-service.jar –server.port=9091
+    Qu’en est il de la répartition de charge ?
+    TP5 : Serveur : Pool de threads vs Non-Blocking Event-Loop
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+        • Installation de JMeter
+          
+    L’objectif de cette partie est de comparer les performances et le scaling du modèle bloquant vis à vis du modèle non bloquant
+    Récupérer les 2 projets Maven Web fourni :
+        • 8_imperative-controller : Modèle bloquant 
+        • 8_reactive-controller : Modèle non-bloquant 
+    
+    Démarrer JMeter avec $JMETER_HOME/bin/jmeter &
+    Utiliser le script JMeter fourni, File → Open , choisir LoadTest.jmx
+    Effectuer des tirs avec les paramètres suivants : NB_USERS=150, PAUSE=1000
+    A la fin du résultat, notez :
+        • Le temps d’exécution total du test
+        • Le débit
+        • Le Max
+    
+    Effectuez plusieurs tirs en augmentant le nombre d’utilisateurs par pallier de 100
+    Lors des tirs observer les threads créés (via jvisulavm par exemple ou via la commande en ligne jstack <pid> | grep -c http-nio)
+    
+    Attention dans un environnement Windows :
+    http://twit88.com/blog/2008/07/28/jmeter-exception-javanetbindexception-address-already-in-use-connect/
+    Alternative docker :
+    Dans le répertoire docker visualisez les fichiers docker-compose 
+    Exécuter docker-compose up -d 
+    Attacher sur le conteneur jmeter via :
+    docker exec -it docker_jmeter_1 /bin/sh
+    Exécuter les tests avec des commandes :
+    jmeter -n -t /LoadTest.jmx -l /LoadTest.jtl -JSERVER=imperative -JNB_USERS=1000
+     
+    Architectures distribuées
+    TP6 : Architecture n-tiers
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+        • Plugins Jboss Tools
+        • Postgres DB
+        • Serveur Wildfly 10
+    
+    Objectifs de l'atelier : Passer en revue les apports d'un serveur applicatif, revoir l'architecture logicielle classique pour le développement d'applications Web. 
+    En particulier :
+    - Le format EAR
+    - Maven
+    - JPA
+    - Technologies EJB3 stateless
+    - CDI
+    - Pattern MVC de la couche de présentation
+    - Comportement Ajax et Encapsulation du javascript dans les balises JSF
+    
+    Description du service en ligne
+    L'application consiste en une base documentaire en ligne. Des utilisateurs peuvent s'enregistrer en ligne sur le service. Ils peuvent alors uploader des documents sur un serveur.
+    
+    Les sources fournies sont un projet Maven composé de 4 modules :
+    - Module modèle : Contenant les classes du modèle. (Classes User et Document)
+    - Module ejb : Implémentant la couche service sous forme d'EJBs stateless, cette couche utilise JPA. Les services métiers y sont spécifiés via l'interface UserDocumentServiceIF
+    - Module web : Implémentation JSF de la couche présentation utilisant jquery et bootstrap.css. La cinématique de l'application est gérée par les classes contrôleurs. Les vues JSF effectuent les binding entre les classes contrôleurs et la vue 
+    - Module ear : Nécessaire pour le packaging en ear
+    
+    Travail demandé :
+        1. Créer une base de données PostgreSQL ou utiliser un dockerfile
+        2. Démarrer le serveur Wildfly
+        3. Déployer le driver Postgresql fourni en le copiant dans le répertoire standalone/deployements de Wildfly
+        4. Créer un compte administrateur wildfly en exécutant le script add-user dans $WILDFLY_HOME/bin 
+        5. Accéder à la console d'administration (localhost:9990) et créer une source de données avec le nom JNDI suivant : « java:jboss/datasources/PostgresqlDS » pointant sur la base postgres créée
+        6. Importer le projet Maven 2_UserDocuments3Tiers dans Eclipse
+        7. Déclarer le serveur Wildfly 10.x et associer le projet au serveur
+        8. Effectuer un premier déploiement et modifier la configuration afin qu'Hibernate créée automatiquement les tables à partir du modèle objet.
+    
+    Comprendre le code fourni (Classes entités, EJB, Contrôleurs et vue JSF) :
+    
+    
+    TP7 : Services Web et API Rest
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+        • Plugins Jboss Tools
+        • Postgres DB
+        • Serveur Wildfly 10
+        • Client SOAP/REST : Exemple : SoapUI 
+          
+    Objectifs de l'atelier : Appréhender les technologies SOAP et REST
+    
+    Le projet est un nouveau projet Maven composé de 3 modules :
+        • Module modèle : Identique au précédent projet
+        • Module EJB : Identique au précédent projet 
+        • Module parent : Module parent incluant les 2 sous modules et les packageant sous forme de war
+    
+    Travail demandé :
+    Importer le projet Maven fourni, l'associer au serveur Wildfly. 
+    
+    SOAP
+        • Ajouter les annotations afin que les méthodes de l'EJB soient accessibles via SOAP,
+        • Déployer et  accéder au WSDL
+        • Effectuer une requête SOAP avec SoapUI par exemple
+    
+    REST
+        • Ajouter les annotations jax-rs à la classe UserDocumentServiceRest.java. Accéder à l'interface REST
+        • Comprendre la configuration Swagger fournie :
+            ◦ Bootstrap de swagger
+            ◦ URLs d’accès au JSON généré par Swagger
+            ◦ Distribution de swagger-ui
+            ◦ Annotations @API présentes
+    
+    TP8 : Architecture MicroServices
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+    
+    Dans cet atelier, nous allons décomposer l'architecture monolithique (un seul war ou ear) des précédents TPs en une architecture micro-service. Dans un premier temps, nous allons décomposer notre projet en 2 micro-services offrant une interface RESTFul. Ces 2 micro-services s’inscriront au démarrage dans un annuaire de service afin de pouvoir être découvert automatiquement. 
+    Les technologies utilisées sont cette fois-ci basées sur les outils Spring. En particulier :
+        • Spring-Boot, Spring-Cloud : Pour les aspects micro-services
+        • Spring-REST, Spring MVC pour les couches d'accès REST
+        • Spring-core pour les annotations et injection de dépendances
+        • Spring-JPA, Spring-Repository pour le tiers de persistance
+        • Spring-Tool-Suite pour l'IDE
+    
+    
+    Description du projet
+    Le projet est un projet Maven composé de 3 sous-modules :
+        • Module annuaire fournit l'application Spring-Boot permettant de démarrer un serveur Eureka qui enregistre les services. Les sources fournies sont complets
+        • Module documentService. : Micro-service dédié à la gestion des documents, ce micro-service est complet 
+        • Module members-service : Micro-service dédié à la gestion des membres. Les classes principales du service sont :
+            ◦ MemberRepository : Interface d'accès aux services de stockage des utilisateurs
+            ◦ MembersController : Contrôleur Rest fournissant l'interface REST au services
+    Ces classes doivent être complétées. Les autres classes sont complètes.
+    Le fichier de configuration bootstrap.yml et la classe principale SpringBoot devront également être complété
+    
+    Mise en place : 
+    Dézipper l’archive fournie et faire pointer Spring Tools Suite vers ce nouveau workspace
+    
+    Déclarer dans votre /etc/hosts :
+    config, annuaire, proxy, fake-smtp, turbine
+          
+    1ère partie démarrage des 3 micro-services et vérification des inscriptions dans l’annuaire
+    Importer les projets Maven suivant :
+        • documents-service
+        • members-service
+    
+    Démarrer dans l’ordre :
+        1. Le service de config : java -Xmx128m config.jar
+    Visualiser les URLs
+    http://config:8888/application/default
+     http://config:8888/documents-service/default
+        2. Démarrer le service de discovery : java -Xmx128m annuaire.jar
+    Consulter : 
+    http://annuaire:1111
+        3. Démarrer documents-service via STS
+    
+    Vérifier l'inscription de documents-service dans l’annuaire 
+    
+    Compléter les sources de members-service 
+        • Fichier bootstrap.yml
+        • Annotations sur la classe principales
+    
+    Démarrer members-service et vérifier son inscription dans l’annuaire 
+    
+    Tester les interfaces REST des 2 micro-services
+    
+    
+    2ème partie : Ajout d’un nouveau micro-service et utilisation de Feign
+    Importer le projet notification-service et le démarrer, vérifier son inscription dans l’annuaire.
+    Démarrer le faux serveur smtp (fake-SMTP.jar), déclarer le host fake-smtp comme pointant sur localhost et tester l’envoi d’un mail via la commande curl fournie dans le projet notification-service.
+    
+    Ajouter les annotations nécessaires dans member-service pour utiliser des clients Feign et une méthode de fallback (@EnableFeignClients et @EnableCircuitBreaker)
+    
+    Lors de l’enregistrement d’un utilisateur, appeler notification-service afin de lui envoyer un email.
+    
+    3ème partie : Charge de l’application, répartition de charges et fall-back
+    Importer le projet turbine et le démarrer 
+    
+    Récupérer le scénario de test JMeter LoadTest.jmx et charger l’application
+    Arrêter soit le serveur smtp, soit les services de notification pour observer le fall-back
+    
+    4ème partie : Proxy
+    Importer le projet proxy et le démarrer
+    Visualiser la configuration : http://config:8888/proxy-service/default
+    
+    Charger l’application en passant par le proxy en utilisant le fichier LoadTestViaProxy.jmx
+    
+    
+    5ème partie : Tableau de bord et monitoring
+    Démarrer turbine : java -Xmx128m -jar turbine.jar 
+    Charger l’application  et observer les tableaux de bords turbine (http://turbine:555/hystrix puis http://turbine:5555/turbine.stream)
+    
+    6ème partie : Docker et docker-compose
+    Mettre en place des Dockerfile pour chaque projet 
+    Tester une image docker sur un projet
+    Mettre au point un fichier docker-compose permettant de démarrer toute l’architecture
+    
+    TP9 : Interface Utilisateur Angular
+    Pré-requis : 
+        • Node js
+        • Angular CLI
+          
+    Description du projet
+    L’interface Angular que nous allons créer est constituée de : 
+        • 3 composants
+            ◦ Un composant application qui fournit le titre et le layout de l’appli
+            ◦ Un composant login encapsulant le formulaire d’authentification
+            ◦ Un composant documents affichant la liste des documents de l’utilisateur authentifié 
+        • 2 classes modèle encapsulant les données d’un membre et celles d’un document
+        • 1 classe ProxyService qui fait la liaison avec le back-end
+          
+    
+    Travail demandé
+        • Installation Angular CLI et création de projet
+    npm install -g @angular/cli@1.6.8
+    ng –version
+          ng new angular
+          cd angular
+          ng serve
+        • Créer les composants formulaire de login et le composant liste de documents
+    ng generate component login
+    ng generate compoenent documents
+        • Vous devez obtenir une structure équivalente aux sources fournis
+    Importer les sources et compléter le code manquant pour exécuter le cas d’utilisation login suivi d’affichage des documents 
+    
+    Mettre au point un docker-compose permettant de démarrer toute la stack
+    
+    
+    TP10. Streaming temps réel avec Spring Boot Stream et Kafka
+    
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+        • Docker
+        • Téléchargement images docker Kafka/Zookeeper
+    
+    Objectifs : Montrer l’évolutivité d’une architecture de type Stream
+    Un flux de données de positons sont envoyées sur une URL, chaque donnée comporte un ID identifiant l’objet localisé. Un premier micro-service se contente de récupérer ce flux et de le stocker dans un topic Kafka.
+    A posteriori, on décide de rajouter un autre micro-services dont la seule responsabilité est de calculer pour chaque objet sa position moyenne pour chaque tranche de minute. Le micro-service récupérera les anciens évènements
+    
+    1. Démarrage Kafka
+    Un fichier docker-compose permettant de démarrer kafka et zookeeper est fourni. 
+    Il nécessite la déclaration de la machine kafka vers localhost (/etc/hosts)
+    
+    2. Première application SpringBoot-CloudStream
+    Importer le projet Maven 14_cloud-stream dans Spring Tools Suite et démarrer l’application. Vérifier la bonne connexion à Kafka.
+    Démarrer JMeter et ouvrir le fichier JMX fourni.
+    Exécuter le script et vérifier le bon envoi de message dans le topic Kafka
+    
+    3. Mise en place d’une seconde application
+    Importer le projet Maven 14_cloud-stream-average dans Spring Tools Suite, comprendre et compléter le code (Classes : AverageStream, AverageService et PositionsListener) 
+    Démarrer l’application SpringBoot est vérifier le traitement des messages à posteriori
+    
+    TP11 : Zookeeper 
+    Pré-requis : 
+        • JDK 8
+    
+    Récupérer l’archive et dézipper dans un répertoire de travail. Cette archive permet de démarrer 3 instances de zookeeper.
+    Avant de démarrer éditer les 3 fichiers zoo.cfg et modifier la clé dataDir contenant une référence à un répertoire
+    Tester le démarrage des 3 instances par la commande :
+    ./zookeeper-3/bin/zkServer.sh start && ./zookeeper-2/bin/zkServer.sh start && ./zookeeper-1/bin/zkServer.sh start
+    Données partagées :
+    Connecter à l’instance 1 via :
+    ./zookeeper-1/bin/zkCli.sh -server 127.0.0.1:2181
+    Créer une donnée et enregister un watcher :
+    create /dp hello
+    get /dp true
+    
+    Dans un autre terminal, se connecter à l’instance 2 et metter à jour la donnée partagées
+    ./zookeeper-2/bin/zkCli.sh -server 127.0.0.1:2182
+    set /xebia world
+    
+    Vous devez observer une notification dans le terminal 1
+    
+    Election et quorum
+    Afficher les rôles des serveurs avec la commande :
+    echo stat | nc localhost 2181 | grep Mode && echo stat | nc localhost 2182 | grep Mode && echo stat | nc localhost 2183 | grep Mode
+    
+    Stopper le serveur leader et observer la réélection
+    Stopper encore un serveur et interroger le serveur restant. L’instance n’ayant plus de quorum ne doit pas répondre
+    Redémarrer un serveur et observer la remise en service de le l’ensemble
+    TP12 : Gestion des flux avec ElasticStack
+    Pré-requis : 
+        • JDK 8
+        • IDE recommandé : STS 4 
+        • ElasticStack
+        • Images docker Kafka/Zookeeper
+        • JMeter
+          
+    Objectifs de l'atelier : S’initier à la suite ElasticStack et à chacun de ses composants : Ingestion de données, Indexation et Visualisation en temps-réel.
+    
+    Travail préliminaire :
+        • Démarrer la stack du Tps précédents :
+            ◦ Kafka/Zookeper via docker-compose
+            ◦ Les 2 micro-services traitant les messages. On pourra utiliser le jar généré par Maven et démarrer ce programme Java avec seulement 128m
+        • Solliciter les micro-services via le nouveau script JMeter fourni
+    
+    Elastic Stack :
+        • 
+        • Installer ElasticSearch et le démarrer, vérifier le bon lancement en accédant à http://localhost:9200
+        • Installer Kibana et démarrer le serveur, accéder à http://localhost:5601
+    Accéder à la Dev Console et exécuter la requête :
+    
+          Cette requête créée un index nommé positons contenant un champ location de type geo_point
+        • Installer logstash et récupérer le fichier de configuration fourni. Éditer le et comprendre les différentes étapes de la pipeline
+    Tester le avec la commande :
+    bin/logstash -t -f ../logstash_pipeline.conf
+    Démarrer l’ingestion avec 
+    bin/logstash -r -f ../logstash_pipeline.conf
+        • Pendant l’ingestion, accéder à kibana et configurer un index pattern vers l’index positions
+        • Aller dans le menu Discover et observer l’arrivée des données en temps réel
+        • Aller dans Visualize et créer une visualisation de type « Coordinate Maps » 
+          
+    
+    TP13 : Réseaux de neurones avec TensorFlow
+    Pré-requis : :
+        • Python 2 ou 3
+        • pip
+    Objectifs de l'atelier : Appréhender la méthodologie de mise au point de système ML, avoir un apperçu du framework TensorFlow.
+    
+    
+    TensorFlow : pip install tensorflow
+    Librairies gestion d’images : 
+    apt-get install -y python-tk
+    pip install scikit-image
+    Objectif du système : Classifier des images de panneaux de signalisation routière.
+    Etape 1 : appréhender les données 
+    Nous disposons de 2 ensembles étiquetés. Un pour l’apprentissage, un pour la validation.
+    Dézipper et parcourir ces 2 ensembles
+    Utilisez le script Python fourni distribution.py pour bien appréhender les données d’apprentissage
+    
+    Etape 2 : Préparer les données 
+    Afin de pouvoir alimenter le réseau de neurones avec le même nombre de caractéristique d’entrée, il est nécessaire de redimensionner les images exemples à la même dimension. D’autre part, la couleur n’est pas importante pour les problèmes de classification, nos les transformons en échelle de gris.
+    Utiliser le script fourni plot-random-transform.py pour voir les effets des transformations
+    Etape 3 : Créer un modèle, l’entraîner, le valider
+    La troisième étape consiste à construire un modèle en utilisant l’API TensorFlow, l’entraîner avec l’ensemble d’apprentissage est de vérifier son acuité avec l’ensemble de validation.
+    Le modèle est constitué de 3 couches :
+        • Une première couche qui met à plat les matrices de pixels en une entrée de 28x28 nœuds
+        • Une seconde couche constituée de 128 nœuds utilisant une fonction d’activation RLU (Rectified Linear Unit) qui introduit de la non-linéarité 
+        • Une dernière couche avec 62 nœuds de sortie correspondant aux différentes étiquettes utilisant la fonction d’activation softmax. Ainsi chaque nœud de sortie contient un score correspondant à la probabilité de l’étiquette
+          
+    Lors de la compilation avec Tera, on indique 3 autres caractéristiques relatif à l’apprentissage :
+        • L’optimiser : La méthode utilisée pour la mise à jour des paramètres du modèle pour minimiser la perte
+        • La perte : L’algorithme utilisé pour le calcul de la perte. La valeur à minimiser
+        • Metric : Un métrique pour surveiller l’apprentissage. Ici, le pourcentage d’image qui sont correctement évaluées
+          
+    Ensuite, le modèle est entraîné puis évalué :
+        • La perte et le pourcentage de bonnes prédictions sont affichées pour l’ensemble de validation
+        • 25 exemples pris au hasard sont affichées et on indique si la prédiction est bonne ou pas.
+          
+    Comprendre le script fourni model.py, l’exécuter et éventuellement jouer avec certains paramètres :
+        • Nombre d’itérations
+        • Algorithme d’optimisation
+        • Ajout d’une couche
+        • ...
+    "
+
+}
