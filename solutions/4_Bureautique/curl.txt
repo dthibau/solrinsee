@@ -1,9 +1,19 @@
 bin/solr create -c bureautique
 
+-- Modification solrconfig.xml 
+
 curl 'http://localhost:8983/solr/admin/cores?action=RELOAD&core=bureautique'
 
-bin/post -c bureautique -params "extractOnly=true&indent=true" -out yes ../../repo/TPs/4_Bureautique/Gradle.pdf
+-- Test sur 2 documents 
+
+bin/post -c bureautique -params "extractOnly=true&indent=true" -out yes ../../github/TPs/4_Bureautique/Gradle.pdf
 
 curl "http://localhost:8983/solr/bureautique/update/extract?&extractOnly=true" --data-binary @ElasticSearch.pdf -H 'Content-type:application/pdf'
 
-bin/post -c bureautique -out yes ../../repo/TPs/4_Bureautique/*.*
+-- Importation de tous le répertoire
+bin/post -c bureautique -out yes ../../github/TPs/4_Bureautique/*.*
+
+-- Vérifier le nombre de documents
+
+-- Récupérer le managed-schema et l'adapter
+

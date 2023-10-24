@@ -6,7 +6,7 @@ curl 'http://localhost:8983/solr/bureautique/api?q=*:*'
 #######################
 # Documents répondant à « Java »
 curl 'http://localhost:8983/solr/bureautique/api?q=java&debug=false'
-# Documents répondant à « Java »
+# Documents ne répondant pas à « Java »
 curl 'http://localhost:8983/solr/bureautique/api?q=-java&debug=false'
 # 1 seul document retourné
 curl 'http://localhost:8983/solr/bureautique/api?q=java&debug=false&rows=1'
@@ -22,3 +22,9 @@ curl 'http://localhost:8983/solr/bureautique/api?fq=creation_date%3A%5B2012-01-0
 http://localhost:8983/solr/bureautique/select?df=_all_&hl.fl=_all_&hl=on&q=%22administration%20java%22~20
 # Fuzzy
 http://localhost:8983/solr/bureautique/api?q=administracion~2
+
+
+###################### Score
+
+defType=lucene&q=content:java+_val_:"div(nb_pages,1000)"
+Dans l'admin : content:java + _val_:"div(nb_pages,1000)"
